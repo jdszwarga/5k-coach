@@ -94,6 +94,8 @@ export function cueEvents(wk, opts = {}) {
   segs.forEach((s, i) => {
     let cue = s.type;
     if (s.type === 'run' && s === lastRun && runs.length > 1) cue = 'lastrun';
+    if (s.edge === 'start') cue = 'warmup';    // first walk: "Warm up. Start with a brisk walk."
+    if (s.edge === 'end') cue = 'cooldown';    // last walk: "Cool down. Nice easy walk."
     if (beeps && i > 0 && segs[i - 1].dur >= 6) {
       for (const d of [3, 2, 1]) ev.push({ t: s.start - d, kind: 'beep' });
     }

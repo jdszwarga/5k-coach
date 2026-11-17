@@ -1,5 +1,5 @@
 import * as store from './store.js';
-import { generatePlan, LEVELS, DAY_NAMES, workoutFromSession, segmentsFor, totalSeconds, fmt, dur, describe, suggestions, goalSeconds } from './plan.js';
+import { generatePlan, LEVELS, workoutFromSession, normWorkout, DEFAULT_WORKOUT, segmentsFor, totalSeconds, fmt, dur, describe, suggestions, goalSeconds, paceText } from './plan.js';
 import { loadClips, clipsReady, WorkoutPlayer, testCue } from './audio.js';
 import * as ai from './ai.js';
 
@@ -49,8 +49,8 @@ function toast(msg) {
 const minutes = sec => Math.round(sec / 60);
 const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-const shortDate = iso => new Date(iso).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-const paceText = p => `${Math.floor(p)}:${String(Math.round((p % 1) * 60)).padStart(2, '0')}`;
+const LOCALE = 'en-US';
+const shortDate = iso => new Date(iso).toLocaleDateString(LOCALE, { weekday: 'short', month: 'short', day: 'numeric' });
 const isStandalone = () => navigator.standalone || matchMedia('(display-mode: standalone)').matches;
 
 function ring(pct, size = 64, stroke = 8, color = 'var(--accent)', track = 'var(--fill)') {
@@ -101,23 +101,22 @@ const REC_WEEKS = { new: 8, some: 6, regular: 4, strong: 3 };
 
 function defaultDraft() {
   const p = store.get().profile;
-  return p ? structuredClone(p) : { level: 'new', weeks: 8, days: [1, 3, 6], pace: 7, startDate: todayISO(), notes: '' };
+  return p ? structuredClone(p) : { level: 'new', weeks: 8, perWeek: 3, paceMi: 11.25, startDate: todayISO(), notes: '' };
 }
 
 function viewOnboarding() {
   const st = store.get();
   const d = ui.draft || (ui.draft = defaultDraft());
   const editing = !!st.plan;
-  const goal = minutes(goalSeconds(d.pace));
+  const goal = minutes(goalSeconds(d.paceMi));
   const hasKey = !!st.settings.apiKey.trim();
   const rec = REC_WEEKS[d.level];
-  const daysSorted = [1, 2, 3, 4, 5, 6, 0];
 
   return `<div class="page no-tabs">
     <div class="nav-row">${editing ? `<button class="btn plain" style="width:auto" data-act="cancel-edit">Cancel</button>` : '<span></span>'}
       <button class="glass-btn" data-act="coach-setup" aria-label="Coach setup">${I.settings}</button></div>
     <h1 class="large-title" style="margin-top:${editing ? 8 : 40}px">${editing ? 'Plan settings' : 'Your 5K plan'}</h1>
-    <p class="subtitle">${editing ? 'Rebuild your plan. Completed runs stay ticked.' : 'Answer a few questions and I’ll build a run/walk plan that ends with a continuous 5K.'}</p>
+    <p class="subtitle">${editing ? 'Rebuild your plan. Completed runs stay checked off.' : 'Answer a few questions and I’ll build a run/walk plan that ends with a non-stop 5K (3.1 miles).'}</p>
 
     <div class="section-header">Where are you starting?</div>
     <div class="group">${Object.entries(LEVELS).map(([id, L]) => `
@@ -130,23 +129,24 @@ function viewOnboarding() {
     <div class="section-header">Schedule</div>
     <div class="group">
       <div class="row"><div class="grow">Weeks to 5K</div><span class="stepper-value">${d.weeks} weeks</span>${stepper('draft-step', 'weeks', d.weeks, { min: 2, max: 20 })}</div>
-      <div class="row" style="padding-bottom:0"><div class="grow">Run days</div><span class="value">${d.days.length} a week</span></div>
-      <div class="days">${daysSorted.map(i => `<button data-act="draft-day" data-v="${i}" class="${d.days.includes(i) ? 'on' : ''}" aria-pressed="${d.days.includes(i)}" aria-label="${DAY_NAMES[i]}">${DAY_NAMES[i][0]}</button>`).join('')}</div>
+      <div class="row"><div class="grow">Runs per week</div><span class="stepper-value">${d.perWeek}</span>${stepper('draft-step', 'perWeek', d.perWeek, { min: 2, max: 6 })}</div>
       <div class="row"><div class="grow">Start date</div><input type="date" data-draft="startDate" value="${esc(d.startDate)}"></div>
     </div>
-    ${d.weeks < rec ? `<p class="section-footer" style="color:var(--warm)">Heads up: ${rec}+ weeks is typical from this starting point. A shorter plan has bigger jumps — Claude can tune it, or you can repeat weeks.</p>` : ''}
+    <p class="section-footer">${d.weeks < rec
+      ? `<span style="color:var(--warm)">Heads up: ${rec}+ weeks is typical from this starting point. A shorter plan has bigger jumps — Claude can tune it, or you can repeat weeks.</span>`
+      : 'Run on any days you like — just aim for a rest day between runs.'}</p>
 
     <div class="section-header">Easy pace</div>
     <div class="group">
-      <div class="row"><div class="grow">Per kilometre</div><span class="stepper-value">${paceText(d.pace)}</span>${stepper('draft-step', 'pace', d.pace, { min: 4.5, max: 11 })}</div>
+      <div class="row"><div class="grow">Per mile</div><span class="stepper-value">${paceText(d.paceMi)}</span>${stepper('draft-step', 'paceMi', d.paceMi, { min: 7, max: 18 })}</div>
     </div>
-    <p class="section-footer">Not sure? Leave it. This sets the final run at about ${goal} minutes.</p>
+    <p class="section-footer">Not sure? Leave it. This sets the final 3.1-mile run at about ${goal} minutes.</p>
 
     ${hasKey ? `<div class="section-header">Anything your coach should know?</div>
     <div class="group">
-      <div class="row"><textarea data-draft="notes" placeholder="Optional — e.g. old knee injury, I walk a lot, I’d like to run a parkrun on 14 Feb…">${esc(d.notes)}</textarea></div>
+      <div class="row"><textarea data-draft="notes" placeholder="Optional — e.g. old knee injury, I walk a lot, I’d like to run a 5K race on Feb 14…">${esc(d.notes)}</textarea></div>
     </div>
-    <p class="section-footer">Claude uses this to personalise the plan.</p>` : ''}
+    <p class="section-footer">Claude uses this to personalize the plan.</p>` : ''}
 
     <div class="mt-l">
       ${ui.buildError ? `<p class="err center">${esc(ui.buildError)}</p>` : ''}
@@ -160,7 +160,7 @@ function viewOnboarding() {
 function savePlan(plan) {
   const d = ui.draft;
   store.save(st => {
-    st.profile = { ...d, perWeek: d.days.length };
+    st.profile = { ...d };
     st.plan = plan;
     st.pendingReview = null;
   });
@@ -172,8 +172,6 @@ function savePlan(plan) {
 }
 
 function checkDraft() {
-  const d = ui.draft;
-  if (d.days.length < 2) { ui.buildError = 'Pick at least 2 run days.'; render(); return false; }
   ui.buildError = null;
   return true;
 }
@@ -183,39 +181,47 @@ function confirmReplace() {
 }
 
 // ---------------- Today ----------------
+function weekChecklist(next) {
+  const st = store.get();
+  const weekNo = next ? next.week : st.plan.weeks.length;
+  const w = st.plan.weeks.find(x => x.week === weekNo);
+  const n = w.sessions.length;
+  const doneCount = w.sessions.filter(s => store.isDone(s.id)).length;
+  return `<div class="week-card">
+    <div class="wc-head">
+      <div><div class="eyebrow">Week ${weekNo} of ${st.plan.weeks.length}</div>
+        <div class="wc-title">${doneCount === n ? 'Week complete!' : `${doneCount} of ${n} runs done`}</div></div>
+      ${ring(doneCount / n, 46, 6)}
+    </div>
+    <div class="wc-runs" style="grid-template-columns:repeat(${n},1fr)">${w.sessions.map((s, i) => {
+      const done = store.isDone(s.id);
+      const isNext = next && next.id === s.id;
+      return `<button class="wc-run" data-act="setup" data-id="${s.id}" aria-label="${esc(s.title)}${done ? ', done' : ''}">
+        <span class="status ${done ? 'done' : isNext ? 'next' : ''}">${done ? I.check : ''}</span>
+        <span class="lbl">${s.title === '5K run' ? '5K' : `Run ${i + 1}`}</span>
+        <span class="sub">${minutes(totalSeconds(workoutFromSession(s)))} min</span>
+      </button>`;
+    }).join('')}</div>
+  </div>`;
+}
+
 function viewToday() {
   const st = store.get();
   const next = store.nextSession();
   const prog = store.progress();
   const now = new Date();
-  const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-
-  const strip = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday); d.setDate(monday.getDate() + i);
-    const planned = st.profile.days.includes(d.getDay());
-    const done = st.history.some(h => sameDay(new Date(h.date), d));
-    const cls = [sameDay(d, now) && 'today', planned && 'planned', done && 'done'].filter(Boolean).join(' ');
-    return `<div class="${cls}"><div class="d">${DAY_NAMES[d.getDay()][0]}</div><div class="n">${d.getDate()}</div><div class="dot"></div></div>`;
-  }).join('');
 
   let hero;
   if (next) {
     const wk = workoutFromSession(next);
     const total = totalSeconds(wk);
     const runTotal = wk.runSec * wk.repeats;
-    const todayPlanned = st.profile.days.includes(now.getDay());
-    let restLine = '';
-    if (!todayPlanned) {
-      const nd = [1, 2, 3, 4, 5, 6, 7].map(k => (now.getDay() + k) % 7).find(x => st.profile.days.includes(x));
-      restLine = `<p class="meta" style="margin:-8px 0 14px">Rest day — next planned run is ${new Date(2024, 0, 7 + nd).toLocaleDateString(undefined, { weekday: 'long' })}. Go anyway if you feel good.</p>`;
-    }
     hero = `<div class="hero">
-      <div class="eyebrow">${esc(sessionLabel(next))}</div>
+      <div class="eyebrow">Up next · ${esc(sessionLabel(next))}</div>
       <h2>${wk.repeats > 1 && wk.walkSec ? `Run ${dur(wk.runSec)}<span style="color:var(--label3)"> / </span>Walk ${dur(wk.walkSec)}` : `Run ${dur(runTotal)}`}</h2>
       <div class="meta">${wk.repeats > 1 && wk.walkSec ? `${wk.repeats} rounds · ` : 'Non-stop · '}${minutes(total)} min total · ${minutes(runTotal)} min running</div>
       ${blocks(wk)}
-      <div class="legend"><span style="--c:var(--run)">Run</span><span style="--c:var(--walk)">Walk</span><span style="--c:var(--fill2)">Warm-up / cool-down</span></div>
-      ${restLine}
+      <div class="legend"><span style="--c:var(--run)">Run</span><span style="--c:var(--walk)">Walk</span></div>
       ${next.note ? `<div class="note">${esc(next.note)}</div>` : ''}
       <button class="btn" data-act="setup" data-id="${next.id}">${I.play.replace(/34/g, '22')} Start run</button>
       <button class="btn plain mt" style="margin-top:6px" data-act="setup">Custom intervals</button>
@@ -230,21 +236,20 @@ function viewToday() {
     </div>`;
   }
 
-  const curWeek = next ? next.week : st.plan.weeks.length;
-  const weekRuns = st.history.filter(h => new Date(h.date) >= new Date(monday.getFullYear(), monday.getMonth(), monday.getDate())).length;
+  const longest = st.history.filter(h => h.completed).reduce((m, h) => Math.max(m, h.workout.runSec), 0);
 
   return `<div class="page">
     <h1 class="large-title">Today</h1>
-    <p class="subtitle">${now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+    <p class="subtitle">${now.toLocaleDateString(LOCALE, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
     ${!isStandalone() ? `<div class="coach" style="margin:0 0 14px"><div class="coach-head">${I.share} Install on your iPhone</div><p style="margin:0">Tap Share in Safari, then <b>Add to Home Screen</b>. It runs full-screen and works offline.</p></div>` : ''}
-    <div class="week-strip">${strip}</div>
+    ${weekChecklist(next)}
     ${hero}
     ${viewCoach()}
     <div class="stats">
       <div class="stat ring-wrap">${ring(prog.total ? prog.done / prog.total : 0, 56, 7)}
         <div><div class="k">Plan</div><div class="v">${prog.done}<small>/${prog.total}</small></div></div></div>
-      <div class="stat"><div class="k">Week</div><div class="v">${curWeek}<small> of ${st.plan.weeks.length}</small></div></div>
-      <div class="stat"><div class="k">This week</div><div class="v">${weekRuns}<small>/${st.profile.days.length} runs</small></div></div>
+      <div class="stat"><div class="k">Longest run</div><div class="v">${longest ? fmt(longest) : '—'}<small>${longest ? ' non-stop' : ''}</small></div></div>
+      <div class="stat"><div class="k">Runs logged</div><div class="v">${st.history.length}</div></div>
       <div class="stat"><div class="k">Total time</div><div class="v">${minutes(st.history.reduce((a, h) => a + h.doneSec, 0))}<small> min</small></div></div>
     </div>
   </div>`;
@@ -493,11 +498,10 @@ function enableSwipeDown(el) {
 }
 
 // ---------------- Run setup ----------------
-const LIMITS = { runSec: [15, 3600], walkSec: [0, 900], repeats: [1, 30], warmupSec: [0, 900], cooldownSec: [0, 900] };
+const LIMITS = { runSec: [15, 3600], walkSec: [0, 900], repeats: [1, 30] };
 
 function stepFor(k, v, d) {
   if (k === 'repeats') return 1;
-  if (k === 'warmupSec' || k === 'cooldownSec') return 60;
   if (k === 'walkSec') return 15;
   const base = d < 0 ? v - 1 : v;
   return base < 300 ? 15 : base < 600 ? 30 : 60;
@@ -508,11 +512,12 @@ function openSetup(sessionId) {
   const session = sessionId ? store.allSessions().find(s => s.id === sessionId) : null;
   const planned = session || store.nextSession();
   let wk = session ? workoutFromSession(session)
-    : st.lastWorkout ? { ...st.lastWorkout }
+    : st.lastWorkout ? normWorkout(st.lastWorkout)
       : planned ? workoutFromSession(planned)
-        : { warmupSec: 300, runSec: 90, walkSec: 90, repeats: 8, cooldownSec: 300 };
+        : { ...DEFAULT_WORKOUT };
   const sugg = suggestions(planned, st.lastWorkout);
   loadClips().catch(() => {});
+  const canMark = session && !store.isDone(session.id);
 
   const title = session ? sessionLabel(session) : 'Custom run';
   openSheet({
@@ -523,7 +528,7 @@ function openSetup(sessionId) {
     body: () => {
       const s = store.get().settings;
       const total = totalSeconds(wk);
-      const ends = new Date(Date.now() + total * 1000).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      const ends = new Date(Date.now() + total * 1000).toLocaleTimeString(LOCALE, { hour: 'numeric', minute: '2-digit' });
       const row = (k, label, val) => `<div class="row"><div class="grow">${label}</div><span class="stepper-value">${val}</span>${stepper('wk-step', k, wk[k], { min: LIMITS[k][0], max: LIMITS[k][1] })}</div>`;
       return `
         <div class="section-header" style="margin-top:6px">Suggestions</div>
@@ -534,15 +539,12 @@ function openSetup(sessionId) {
           ${row('walkSec', '<span style="color:var(--walk);font-weight:600">Walk</span>', wk.walkSec ? fmt(wk.walkSec) : 'None')}
           ${row('repeats', 'Repeats', `× ${wk.repeats}`)}
         </div>
-        <div class="group mt">
-          ${row('warmupSec', 'Warm-up walk', wk.warmupSec ? dur(wk.warmupSec) : 'None')}
-          ${row('cooldownSec', 'Cool-down walk', wk.cooldownSec ? dur(wk.cooldownSec) : 'None')}
-        </div>
+        <p class="section-footer">Starts and ends with a walk — those are the warm-up and cool-down.</p>
         <div class="summary-card">
           <div class="muted">Total</div>
           <div class="big">${fmt(total)}</div>
-          <div class="muted">${dur(wk.runSec * wk.repeats)} running · finishes about ${ends}</div>
-          ${blocks(wk).replace('margin: 4px 0 16px', '')}
+          <div class="muted">${dur(wk.runSec * wk.repeats)} running · finishes around ${ends}</div>
+          ${blocks(wk)}
         </div>
         <div class="section-header">Audio</div>
         <div class="group"><div class="row">
@@ -552,8 +554,29 @@ function openSetup(sessionId) {
           </div></div></div>
         <p class="section-footer">${audioModeHelp(s.audioMode)}</p>`;
     },
-    foot: () => `<button class="btn" data-act="start-run">${I.play.replace(/34/g, '22')} Start</button>`,
+    foot: () => `<button class="btn" data-act="start-run">${I.play.replace(/34/g, '22')} Start</button>
+      ${canMark ? `<button class="btn plain" data-act="mark-done">Check off without the timer</button>` : ''}`,
   });
+}
+
+// Lets a run done without the app (treadmill, forgot phone…) still count toward the week.
+function markDone() {
+  const { session, wk } = sheet;
+  if (!confirm(`Check off ${sessionLabel(session)} as done?`)) return;
+  closeSheet();
+  const total = totalSeconds(wk);
+  store.save(st => {
+    st.history.push({
+      id: (crypto.randomUUID?.() || String(Date.now())),
+      date: new Date().toISOString(),
+      sessionId: session.id,
+      sessionLabel: sessionLabel(session),
+      workout: wk, totalSec: total, doneSec: total,
+      completed: true, feel: null, notes: 'Checked off without the timer', manual: true,
+    });
+  });
+  render();
+  toast('Checked off ✓');
 }
 
 // ---------------- Run screen ----------------
@@ -592,7 +615,7 @@ async function startRun() {
 function mountRunScreen(meta) {
   const r = 140, C = 2 * Math.PI * r;
   run.C = C;
-  $('#run-root').innerHTML = `<div class="run-screen warmup" id="run">
+  $('#run-root').innerHTML = `<div class="run-screen walk" id="run">
     <div class="run-top">
       <span style="width:40px"></span>
       <div class="t">${esc(meta.subtitle)}</div>
@@ -634,7 +657,10 @@ function tick() {
   const phase = seg ? seg.type : 'done';
   if (run.phase !== phase) { screen.className = `run-screen ${phase}`; run.phase = phase; }
   $('#r-name').textContent = seg ? PHASE_NAMES[seg.type] : 'DONE';
-  $('#r-rep').textContent = seg && (seg.type === 'run' || seg.type === 'walk') && seg.of > 1 ? `${seg.rep} of ${seg.of}` : '';
+  $('#r-rep').textContent = !seg ? ''
+    : seg.edge === 'start' ? 'Warm-up'
+      : seg.edge === 'end' ? 'Cool-down'
+        : seg.of > 1 ? `${seg.rep} of ${seg.of}` : '';
   const remSeg = seg ? seg.end - t : 0;
   $('#r-count').textContent = fmt(Math.ceil(remSeg - 0.05));
   const frac = seg ? (t - seg.start) / seg.dur : 1;
@@ -746,28 +772,24 @@ const actions = {
   'sheet-close': () => closeSheet(),
 
   'draft-level': el => { ui.draft.level = el.dataset.v; render(); },
-  'draft-day': el => {
-    const v = +el.dataset.v, d = ui.draft;
-    d.days = d.days.includes(v) ? d.days.filter(x => x !== v) : [...d.days, v].sort();
-    render();
-  },
   'draft-step': el => {
     const d = ui.draft, k = el.dataset.k, dir = +el.dataset.d;
     if (k === 'weeks') d.weeks = Math.max(2, Math.min(20, d.weeks + dir));
-    if (k === 'pace') d.pace = Math.max(4.5, Math.min(11, Math.round((d.pace + dir * 0.25) * 4) / 4));
+    if (k === 'perWeek') d.perWeek = Math.max(2, Math.min(6, d.perWeek + dir));
+    if (k === 'paceMi') d.paceMi = Math.max(7, Math.min(18, Math.round((d.paceMi + dir * 0.25) * 4) / 4));
     render();
   },
   'build-local': () => {
     if (!checkDraft() || !confirmReplace()) return;
     const d = ui.draft;
-    savePlan(generatePlan({ ...d, perWeek: d.days.length }));
+    savePlan(generatePlan({ ...d }));
   },
   'build-claude': async () => {
     if (!checkDraft() || !confirmReplace()) return;
     const d = ui.draft;
     ui.building = true; ui.buildError = null; render();
     try {
-      const plan = await ai.buildPlan({ ...d, perWeek: d.days.length });
+      const plan = await ai.buildPlan({ ...d });
       ui.building = false;
       savePlan(plan);
     } catch (e) {
@@ -797,6 +819,7 @@ const actions = {
     if (sheet) sheet.update(); else render();
   },
   'start-run': () => startRun(),
+  'mark-done': () => markDone(),
 
   'run-toggle': () => { if (player.paused) player.play().catch(() => {}); else player.pause(); },
   'run-resume': () => { $('.start-overlay').hidden = true; player.play().catch(e => toast(e.message)); },

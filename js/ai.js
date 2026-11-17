@@ -1,7 +1,7 @@
-// Claude integration: build a personalised plan, and review runs to adjust upcoming sessions.
+// Claude integration: build a personalized plan, and review runs to adjust upcoming sessions.
 // Calls go straight from the phone to the Claude API with your own key (stored only on this device).
 
-import { generatePlan, LEVELS, DAY_NAMES, describe, workoutFromSession } from './plan.js';
+import { generatePlan, LEVELS, describe, workoutFromSession, paceText } from './plan.js';
 import * as store from './store.js';
 
 const SDK_URL = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@1.5.0/+esm';
@@ -30,11 +30,9 @@ async function client() {
 
 const SESSION_PROPS = {
   title: { type: 'string' },
-  warmupSec: { type: 'integer' },
   runSec: { type: 'integer' },
   walkSec: { type: 'integer' },
   repeats: { type: 'integer' },
-  cooldownSec: { type: 'integer' },
   note: { type: 'string' },
 };
 
@@ -87,9 +85,10 @@ const ADJUST_SCHEMA = {
 };
 
 const SYSTEM = `You are a friendly, practical running coach inside a personal "Couch to 5K"-style app.
-Workouts are run/walk intervals: a warm-up walk, then "run X seconds, walk Y seconds" repeated N times (no walk after the final run), then a cool-down walk.
+Workouts are run/walk intervals: walk Y seconds, then "run X seconds, walk Y seconds" repeated N times. So every workout starts and ends with a walk of the same length — those walks are the warm-up and cool-down (there are no separate ones). For a non-stop run, repeats = 1 and walkSec is just the walk before and after.
 Coach for injury-free consistency: progress gradually, prefer repeating a step over rushing, and keep runs at an easy conversational pace.
-All durations are whole seconds. Use run and walk lengths that are multiples of 15 seconds.`;
+All durations are whole seconds. Use run and walk lengths that are multiples of 15 seconds.
+The runner is in the US: in any text, use miles and US spelling (never kilometers). A 5K is 3.1 miles.`;
 
 async function ask(prompt, schema) {
   const c = await client();
@@ -142,11 +141,9 @@ function cleanSession(s, id) {
   return {
     id,
     title: String(s.title || 'Run').slice(0, 40),
-    warmupSec: int(s.warmupSec ?? 300, 0, 900, 15),
     runSec: int(s.runSec, 15, 3600, 15),
-    walkSec: repeats === 1 ? 0 : int(s.walkSec, 0, 600, 15),
+    walkSec: int(s.walkSec, 0, 600, 15),
     repeats,
-    cooldownSec: int(s.cooldownSec ?? 300, 0, 900, 15),
     note: String(s.note || '').slice(0, 240),
   };
 }
@@ -154,8 +151,8 @@ function cleanSession(s, id) {
 function profileText(p) {
   return [
     `Experience: ${LEVELS[p.level]?.label} (${LEVELS[p.level]?.detail})`,
-    `Plan length: ${p.weeks} weeks, ${p.perWeek} runs per week on ${p.days.map(d => DAY_NAMES[d]).join(', ')}`,
-    `Estimated easy pace: ${Math.floor(p.pace)}:${String(Math.round((p.pace % 1) * 60)).padStart(2, '0')} per km`,
+    `Plan length: ${p.weeks} weeks, ${p.perWeek} runs per week (no fixed days — runs whenever it suits)`,
+    `Estimated easy pace: ${paceText(p.paceMi)} per mile`,
     `Start date: ${p.startDate}`,
     p.notes ? `Runner's notes: ${p.notes}` : 'Runner\'s notes: none',
   ].join('\n');
@@ -166,14 +163,14 @@ export async function buildPlan(profile) {
   const baselineText = baseline.weeks.map(w =>
     `Week ${w.week}: ` + w.sessions.map(s => describe(workoutFromSession(s))).join(' | ')).join('\n');
 
-  const prompt = `Create my personalised 5K training plan.
+  const prompt = `Create my personalized 5K training plan.
 
 ${profileText(profile)}
 
 Requirements:
 - Exactly ${profile.weeks} weeks with exactly ${profile.perWeek} sessions each.
-- The very last session is the goal: one continuous run of about 5 km (repeats = 1, walkSec = 0) titled "5K run".
-- Each session has a warm-up and cool-down walk (usually 300 seconds each).
+- Start where I am: for a new runner the first week should be about run 90 seconds / walk 90 seconds × 8.
+- The very last session is the goal: one non-stop run of about 5K / 3.1 miles (repeats = 1) titled "5K run", with walkSec as the walk before and after.
 - Short, encouraging "note" for each session (one sentence) and a short "focus" for each week.
 - "summary": 1–2 sentences describing the plan.
 
@@ -231,7 +228,7 @@ Guidance:
     return {
       id: c.id,
       runSec: int(c.runSec, 15, 3600, 15),
-      walkSec: repeats === 1 ? 0 : int(c.walkSec, 0, 600, 15),
+      walkSec: int(c.walkSec, 0, 600, 15),
       repeats,
       note: String(c.note || current.note || '').slice(0, 240),
     };

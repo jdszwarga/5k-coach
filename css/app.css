@@ -126,6 +126,18 @@ svg { display: block; }
 .glass-btn { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: var(--glass); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 0.5px solid var(--glass-border); }
 
 /* ---------- Today ---------- */
+.week-card { background: var(--card); border-radius: 22px; padding: 16px 16px 12px; margin-bottom: 14px; }
+.wc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.wc-title { font-size: 20px; font-weight: 700; margin-top: 2px; }
+.wc-runs { display: grid; gap: 6px; }
+.wc-run { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 2px; border-radius: 14px; background: var(--card2); }
+.wc-run:active { background: var(--fill2); }
+.wc-run .status { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--label3); display: grid; place-items: center; }
+.wc-run .status.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.wc-run .status.next { border-color: var(--accent); }
+.wc-run .status.next::after { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.wc-run .lbl { font-size: 14px; font-weight: 600; }
+.wc-run .sub { font-size: 12px; color: var(--label2); }
 .week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 4px 0 18px; text-align: center; }
 .week-strip .d { font-size: 12px; color: var(--label2); font-weight: 600; }
 .week-strip .n { margin: 6px auto 0; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; position: relative; }

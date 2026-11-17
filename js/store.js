@@ -11,7 +11,7 @@ const DEFAULTS = {
     autoReview: true,
   },
   pendingReview: null,     // last Claude review waiting for Apply / Keep
-  profile: null,           // { weeks, perWeek, days:[0-6], level, pace, startDate, notes }
+  profile: null,           // { weeks, perWeek, level, paceMi (min/mile), startDate, notes }
   plan: null,              // { createdAt, source, summary, weeks:[{ week, focus, sessions:[...] }] }
   history: [],             // [{ id, date, sessionId, workout, totalSec, doneSec, completed, feel, notes }]
   lastWorkout: null,
@@ -24,6 +24,12 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return structuredClone(DEFAULTS);
     const parsed = JSON.parse(raw);
+    const p = parsed.profile;
+    if (p) { // migrate older profiles: run days -> runs per week, min/km -> min/mile
+      if (!p.perWeek && Array.isArray(p.days)) p.perWeek = p.days.length;
+      if (p.paceMi == null && p.pace != null) p.paceMi = Math.round(p.pace * 1.609 * 4) / 4;
+      delete p.days; delete p.pace;
+    }
     return { ...structuredClone(DEFAULTS), ...parsed, settings: { ...DEFAULTS.settings, ...parsed.settings } };
   } catch {
     return structuredClone(DEFAULTS);
