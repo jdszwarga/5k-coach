@@ -197,16 +197,22 @@ export async function reviewRuns() {
   const upcoming = all.filter(s => !store.isDone(s.id)).slice(0, 9);
   if (!upcoming.length) return { message: 'You’ve finished the plan — no changes needed. Congratulations!', changes: [] };
 
-  const recent = st.history.slice(-8).map(h => {
+  const localDate = d => new Date(d).toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+  const kindText = h => h.sessionId ? `plan session ${h.sessionId}`
+    : h.kind === 'repeat' ? `repeat of earlier session "${h.sessionLabel}" — does not advance the plan`
+      : h.kind === 'bonus' ? 'bonus easy run — does not advance the plan'
+        : 'extra custom run — does not advance the plan';
+  const recent = st.history.slice(-10).map(h => {
     const pct = Math.round((h.doneSec / h.totalSec) * 100);
-    return `- ${h.date.slice(0, 10)}${h.sessionId ? ` (plan session ${h.sessionId})` : ' (extra run)'}: ${describe(h.workout)}; finished ${pct}% (${h.completed ? 'counted as done' : 'not counted'}); felt ${h.feel || 'not rated'}${h.notes ? `; notes: "${h.notes}"` : ''}`;
+    return `- ${localDate(h.date)} (${kindText(h)}): ${describe(h.workout)}; finished ${pct}% (${h.completed ? 'counted as done' : 'not counted'}); felt ${h.feel || 'not rated'}${h.notes ? `; notes: "${h.notes}"` : ''}`;
   }).join('\n');
 
   const prog = store.progress();
   const prompt = `Review my recent runs and adjust my upcoming sessions only if it would help.
 
+Today's date: ${localDate(Date.now())}
 ${profileText(st.profile)}
-Progress: ${prog.done} of ${prog.total} sessions done.
+Progress: ${prog.done} of ${prog.total} sessions done. The plan moves forward one session per completed plan run (not by calendar), so falling behind just means it finishes later.
 
 Recent runs (oldest first):
 ${recent || 'none yet'}
@@ -216,6 +222,7 @@ ${upcoming.map(s => `${s.id} (week ${s.week}): runSec=${s.runSec}, walkSec=${s.w
 
 Guidance:
 - If the last run felt hard or I had to stop, ease off or repeat the step. If it felt easy, you may progress a little faster.
+- Look at the dates: after a long gap (7+ days), ease the next session or two; if plan runs were crammed into back-to-back days, slow the progression rather than speeding it up.
 - If things are on track, return an empty "changes" list.
 - Only include sessions you are changing, using ids from the list above. Keep the final 5K run continuous.
 - "message": 2–3 short, encouraging sentences to me explaining what you changed and why (or why nothing needs to change).`;

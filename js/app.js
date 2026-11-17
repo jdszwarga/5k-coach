@@ -181,6 +181,35 @@ function confirmReplace() {
 }
 
 // ---------------- Today ----------------
+const COMEBACK_DAYS = 7;
+const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+function daysSinceLastRun() {
+  const h = store.get().history;
+  if (!h.length) return null;
+  const last = new Date(Math.max(...h.map(x => +new Date(x.date))));
+  return Math.round((startOfDay(new Date()) - startOfDay(last)) / 864e5);
+}
+
+// Runs logged since Sunday (US calendar week), of any kind.
+function runsThisWeek() {
+  const now = new Date();
+  const sunday = startOfDay(now); sunday.setDate(sunday.getDate() - now.getDay());
+  return store.get().history.filter(h => new Date(h.date) >= sunday).length;
+}
+
+function lastDonePlanSession() {
+  const done = store.allSessions().filter(s => store.isDone(s.id));
+  return done[done.length - 1] || null;
+}
+
+// A bonus run repeats the most recent completed plan run (it's already been earned).
+function bonusWorkout() {
+  const lastDone = lastDonePlanSession();
+  const st = store.get();
+  return lastDone ? workoutFromSession(lastDone) : st.lastWorkout ? normWorkout(st.lastWorkout) : { ...DEFAULT_WORKOUT };
+}
+
 function weekChecklist(next) {
   const st = store.get();
   const weekNo = next ? next.week : st.plan.weeks.length;
@@ -211,8 +240,34 @@ function viewToday() {
   const prog = store.progress();
   const now = new Date();
 
+  const gap = daysSinceLastRun();
+  const lastDone = lastDonePlanSession();
+  const weekCount = runsThisWeek();
+
   let hero;
-  if (next) {
+  if (next && lastDone && gap !== null && gap > COMEBACK_DAYS) {
+    // Comeback: after a long break, suggest repeating the last plan run before moving on.
+    const wk = workoutFromSession(lastDone);
+    hero = `<div class="hero">
+      <div class="eyebrow" style="color:var(--walk)">Welcome back</div>
+      <h2>Ease back in</h2>
+      <div class="meta">It’s been ${gap} days since your last run. Repeat your last plan run before moving on — it’ll feel easier than you think.</div>
+      <div class="note"><b>${esc(sessionLabel(lastDone))}</b><br>${esc(describe(wk))} · ${minutes(totalSeconds(wk))} min</div>
+      <button class="btn" data-act="repeat-run" data-id="${lastDone.id}">${I.play.replace(/34/g, '22')} Repeat last run</button>
+      <button class="btn plain mt" style="margin-top:6px" data-act="setup" data-id="${next.id}">Continue with ${esc(sessionLabel(next))}</button>
+    </div>`;
+  } else if (next && weekCount >= st.profile.perWeek) {
+    // Weekly target reached: steer extra runs to an easy bonus run that doesn't advance the plan.
+    const wk = bonusWorkout();
+    hero = `<div class="hero">
+      <div class="eyebrow">This week · ${weekCount} run${weekCount === 1 ? '' : 's'}</div>
+      <h2>Weekly goal done!</h2>
+      <div class="meta">Rest days are when your legs get stronger. Want to run anyway? Do an easy bonus run — it won’t move your plan ahead.</div>
+      <div class="note"><b>Bonus run</b><br>${esc(describe(wk))} · ${minutes(totalSeconds(wk))} min</div>
+      <button class="btn" data-act="bonus-run">${I.play.replace(/34/g, '22')} Bonus easy run</button>
+      <button class="btn plain mt" style="margin-top:6px" data-act="setup" data-id="${next.id}">Do ${esc(sessionLabel(next))} instead</button>
+    </div>`;
+  } else if (next) {
     const wk = workoutFromSession(next);
     const total = totalSeconds(wk);
     const runTotal = wk.runSec * wk.repeats;
@@ -507,22 +562,27 @@ function stepFor(k, v, d) {
   return base < 300 ? 15 : base < 600 ? 30 : 60;
 }
 
-function openSetup(sessionId) {
+// extra = { kind: 'repeat' | 'bonus', wk, label } for runs that don't advance the plan.
+function openSetup(sessionId, extra = null) {
   const st = store.get();
-  const session = sessionId ? store.allSessions().find(s => s.id === sessionId) : null;
+  const session = !extra && sessionId ? store.allSessions().find(s => s.id === sessionId) : null;
   const planned = session || store.nextSession();
-  let wk = session ? workoutFromSession(session)
-    : st.lastWorkout ? normWorkout(st.lastWorkout)
-      : planned ? workoutFromSession(planned)
-        : { ...DEFAULT_WORKOUT };
-  const sugg = suggestions(planned, st.lastWorkout);
+  let wk = extra ? normWorkout(extra.wk)
+    : session ? workoutFromSession(session)
+      : st.lastWorkout ? normWorkout(st.lastWorkout)
+        : planned ? workoutFromSession(planned)
+          : { ...DEFAULT_WORKOUT };
+  const sugg = extra ? [{ label: extra.kind === 'repeat' ? 'Repeat' : 'Bonus', wk: normWorkout(extra.wk) }, ...suggestions(null, st.lastWorkout)] : suggestions(planned, st.lastWorkout);
   loadClips().catch(() => {});
   const canMark = session && !store.isDone(session.id);
 
-  const title = session ? sessionLabel(session) : 'Custom run';
+  const title = extra ? extra.label : session ? sessionLabel(session) : 'Custom run';
   openSheet({
     title,
     session,
+    kind: extra ? extra.kind : session ? 'plan' : 'custom',
+    label: title,
+    sugg,
     get wk() { return wk; },
     set wk(v) { wk = v; },
     body: () => {
@@ -539,7 +599,7 @@ function openSetup(sessionId) {
           ${row('walkSec', '<span style="color:var(--walk);font-weight:600">Walk</span>', wk.walkSec ? fmt(wk.walkSec) : 'None')}
           ${row('repeats', 'Repeats', `× ${wk.repeats}`)}
         </div>
-        <p class="section-footer">Starts and ends with a walk — those are the warm-up and cool-down.</p>
+        <p class="section-footer">Starts and ends with a walk — those are the warm-up and cool-down.${sheet?.kind === 'repeat' || sheet?.kind === 'bonus' ? ' This run won’t move your plan ahead.' : ''}</p>
         <div class="summary-card">
           <div class="muted">Total</div>
           <div class="big">${fmt(total)}</div>
@@ -571,6 +631,7 @@ function markDone() {
       date: new Date().toISOString(),
       sessionId: session.id,
       sessionLabel: sessionLabel(session),
+      kind: 'plan',
       workout: wk, totalSec: total, doneSec: total,
       completed: true, feel: null, notes: 'Checked off without the timer', manual: true,
     });
@@ -583,17 +644,14 @@ function markDone() {
 let run = null;
 
 async function startRun() {
-  const { wk, session } = sheet;
+  const { wk, session, kind, label } = sheet;
   const st = store.get();
   if (!clipsReady()) {
     try { await loadClips(); } catch { toast('Couldn’t load voice cues'); return; }
   }
   closeSheet(true);
 
-  const meta = {
-    title: describe(wk),
-    subtitle: session ? sessionLabel(session) : 'Custom run',
-  };
+  const meta = { title: describe(wk), subtitle: label };
   let rendered;
   try {
     rendered = player.load(wk, { mode: st.settings.audioMode, beeps: st.settings.beeps, halfway: st.settings.halfway }, meta);
@@ -601,7 +659,7 @@ async function startRun() {
     toast('Couldn’t prepare audio: ' + e.message);
     return;
   }
-  run = { wk, session, segs: rendered.segs, end: rendered.end, pocket: false, finished: false, startedAt: new Date().toISOString() };
+  run = { wk, session, kind, label, segs: rendered.segs, end: rendered.end, pocket: false, finished: false, startedAt: new Date().toISOString() };
   mountRunScreen(meta);
   try {
     await player.play();
@@ -729,7 +787,7 @@ function finishRun(reachedEnd) {
       <div class="summary-card center">
         ${ring(doneSec / r.end, 96, 10)}
         <div class="big mt">${fmt(doneSec)}</div>
-        <div class="muted">${esc(describe(r.wk))}${r.session ? ` · ${esc(sessionLabel(r.session))}` : ''}</div>
+        <div class="muted">${esc(describe(r.wk))}${r.kind !== 'custom' ? ` · ${esc(r.label)}` : ''}</div>
       </div>
       <div class="section-header">How did it feel?</div>
       <div class="segmented" style="background:var(--card)">${FEELS.map(f => `<button data-act="feel" data-v="${f.id}" class="${result.feel === f.id ? 'on' : ''}">${f.label}</button>`).join('')}</div>
@@ -749,7 +807,8 @@ function saveRun(discard) {
       id: (crypto.randomUUID?.() || String(Date.now())),
       date: r.startedAt,
       sessionId: r.session ? r.session.id : null,
-      sessionLabel: r.session ? sessionLabel(r.session) : null,
+      sessionLabel: r.kind === 'custom' ? null : r.label,
+      kind: r.kind,
       workout: r.wk,
       totalSec: Math.round(r.end),
       doneSec: Math.round(doneSec),
@@ -809,9 +868,7 @@ const actions = {
     sheet.update();
   },
   'wk-sugg': el => {
-    const st = store.get();
-    const sugg = suggestions(sheet.session || store.nextSession(), st.lastWorkout);
-    sheet.wk = { ...sugg[+el.dataset.i].wk };
+    sheet.wk = { ...sheet.sugg[+el.dataset.i].wk };
     sheet.update();
   },
   'audio-mode': el => {
@@ -820,6 +877,11 @@ const actions = {
   },
   'start-run': () => startRun(),
   'mark-done': () => markDone(),
+  'repeat-run': el => {
+    const s = store.allSessions().find(x => x.id === el.dataset.id);
+    if (s) openSetup(null, { kind: 'repeat', wk: workoutFromSession(s), label: `${sessionLabel(s)} (repeat)` });
+  },
+  'bonus-run': () => openSetup(null, { kind: 'bonus', wk: bonusWorkout(), label: 'Bonus run' }),
 
   'run-toggle': () => { if (player.paused) player.play().catch(() => {}); else player.pause(); },
   'run-resume': () => { $('.start-overlay').hidden = true; player.play().catch(e => toast(e.message)); },
