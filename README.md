@@ -4,7 +4,7 @@ A personal iPhone web app (PWA) for getting to 5K with run/walk intervals.
 
 - **Plan**: pick your starting level, number of weeks and run days; get a week-by-week plan ending in a continuous 5K.
 - **Interval timer**: before each run, use the planned intervals or set your own (run / walk / repeats / warm-up / cool-down). A voice says "Run" and "Walk" at each change, with countdown beeps.
-- **Claude coach** (optional): add your Claude API key in Settings to have Claude build a personalised plan and review each run, suggesting changes to upcoming sessions that you can accept or ignore.
+- **Claude coach** (optional): an admin adds a Claude API key once under **Coach setup** (gear icon on the first screen, or Settings → Claude coach). Claude then builds a personalised plan and reviews each run, suggesting changes to upcoming sessions that can be accepted or ignored. "Reset everything" keeps the coach setup.
 
 ## Install on iPhone
 
@@ -27,7 +27,7 @@ How it works: the whole workout is rendered into one audio track (silence + spok
 node tools/serve.mjs 5173
 ```
 
-- `tools/make-cues.ps1` regenerates the voice clips in `audio/` with a Windows voice.
+- `python tools/make-cues.py` regenerates the voice clips in `audio/` (NZ neural voice "Molly" via edge-tts + ffmpeg; `--voice` to change).
 - `tools/make-icons.ps1` regenerates the icons.
 - Data lives in `localStorage` on the phone. Your API key never leaves the device except to call `api.anthropic.com`.
 - After changing files, bump `CACHE` in `sw.js` so phones pick up the update.

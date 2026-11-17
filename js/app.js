@@ -114,7 +114,8 @@ function viewOnboarding() {
   const daysSorted = [1, 2, 3, 4, 5, 6, 0];
 
   return `<div class="page no-tabs">
-    <div class="nav-row">${editing ? `<button class="btn plain" style="width:auto" data-act="cancel-edit">Cancel</button>` : '<span></span>'}<span></span></div>
+    <div class="nav-row">${editing ? `<button class="btn plain" style="width:auto" data-act="cancel-edit">Cancel</button>` : '<span></span>'}
+      <button class="glass-btn" data-act="coach-setup" aria-label="Coach setup">${I.settings}</button></div>
     <h1 class="large-title" style="margin-top:${editing ? 8 : 40}px">${editing ? 'Plan settings' : 'Your 5K plan'}</h1>
     <p class="subtitle">${editing ? 'Rebuild your plan. Completed runs stay ticked.' : 'Answer a few questions and I’ll build a run/walk plan that ends with a continuous 5K.'}</p>
 
@@ -141,12 +142,11 @@ function viewOnboarding() {
     </div>
     <p class="section-footer">Not sure? Leave it. This sets the final run at about ${goal} minutes.</p>
 
-    <div class="section-header">Claude coach (optional)</div>
+    ${hasKey ? `<div class="section-header">Anything your coach should know?</div>
     <div class="group">
-      <div class="row"><div>API key</div><input type="password" data-set="apiKey" placeholder="sk-ant-…" value="${esc(st.settings.apiKey)}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-      <div class="row"><textarea data-draft="notes" placeholder="Anything Claude should know? e.g. old knee injury, I walk a lot, I want to run a parkrun on 14 Feb…">${esc(d.notes)}</textarea></div>
+      <div class="row"><textarea data-draft="notes" placeholder="Optional — e.g. old knee injury, I walk a lot, I’d like to run a parkrun on 14 Feb…">${esc(d.notes)}</textarea></div>
     </div>
-    <p class="section-footer">With a key, Claude personalises the plan and reviews each run. Without one, you get the built-in plan.</p>
+    <p class="section-footer">Claude uses this to personalise the plan.</p>` : ''}
 
     <div class="mt-l">
       ${ui.buildError ? `<p class="err center">${esc(ui.buildError)}</p>` : ''}
@@ -382,15 +382,15 @@ function viewSettings() {
     </div>
     <p class="section-footer">${audioModeHelp(s.audioMode)}</p>
 
-    <div class="section-header">Claude coach</div>
+    <div class="section-header">Coach</div>
     <div class="group">
-      <div class="row"><div>API key</div><input type="password" data-set="apiKey" placeholder="sk-ant-…" value="${esc(s.apiKey)}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-      <div class="row"><div class="grow">Model</div>
-        <select data-set="model">${ai.MODELS.map(m => `<option value="${m.id}" ${s.model === m.id ? 'selected' : ''}>${m.label}</option>`).join('')}</select></div>
-      <div class="row"><div class="grow">Review after each run</div>${toggle('autoReview', s.autoReview !== false)}</div>
-      <button class="row tap link" data-act="test-key">Test connection</button>
+      <button class="row tap" data-act="coach-setup">
+        <span class="icon-badge" style="background:linear-gradient(135deg,#d97757,#c15f3c)">${I.spark}</span>
+        <div class="grow"><div class="title">Claude coach</div><div class="sub">${s.apiKey.trim() ? 'Connected' : 'Not set up'}</div></div>
+        <span class="chev">${I.chev}</span>
+      </button>
+      ${s.apiKey.trim() ? `<div class="row"><div class="grow">Review after each run</div>${toggle('autoReview', s.autoReview !== false)}</div>` : ''}
     </div>
-    <p class="section-footer">Your key is stored only on this iPhone and sent only to Anthropic’s API. Create one at console.anthropic.com. Each plan or review costs a few cents at most.</p>
 
     <div class="section-header">Plan</div>
     <div class="group">
@@ -410,6 +410,33 @@ function audioModeHelp(mode) {
   return mode === 'locked'
     ? 'Screen off: cues keep playing with your iPhone locked in your pocket, but iOS pauses Spotify/podcasts while a workout plays.'
     : 'Music mix: cues play over Spotify/podcasts. iOS mutes web audio when the screen locks, so the app keeps the screen awake — use the pocket lock button. Make sure Silent mode is off.';
+}
+
+// ---------------- Coach setup (admin) ----------------
+function openCoachSetup() {
+  const state = { status: '', ok: false, busy: false };
+  openSheet({
+    title: 'Coach setup',
+    admin: state,
+    body: () => {
+      const set = store.get().settings;
+      const key = set.apiKey.trim();
+      return `
+        <p class="section-footer" style="margin:2px 4px 0">One-time setup. Paste a Claude API key and the coach builds the plan and reviews each run. The key stays on this iPhone and is only ever sent to Anthropic.</p>
+        ${!isStandalone() ? `<p class="section-footer" style="margin:10px 4px 0;color:var(--warm)">You’re in Safari. Add the app to the Home Screen first and enter the key there — the Home Screen app doesn’t share Safari’s storage.</p>` : ''}
+        <div class="section-header">Claude API key</div>
+        <div class="group">
+          ${key ? `<div class="row"><div class="grow">Current key</div><span class="value">••••${esc(key.slice(-4))}</span></div>` : ''}
+          <div class="row"><input type="password" id="admin-key" placeholder="${key ? 'Paste a new key to replace it' : 'sk-ant-…'}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="text-align:left;color:var(--label)"></div>
+          <div class="row"><div class="grow">Model</div>
+            <select data-set="model">${ai.MODELS.map(m => `<option value="${m.id}" ${set.model === m.id ? 'selected' : ''}>${m.label}</option>`).join('')}</select></div>
+        </div>
+        ${state.status ? `<p class="section-footer" style="color:${state.ok ? 'var(--accent)' : 'var(--red)'};font-weight:600">${esc(state.status)}</p>` : ''}
+        <p class="section-footer">Tip: create a separate key for this app at console.anthropic.com and put a monthly spend limit on its workspace. A plan or a run review costs a few cents.</p>
+        ${key ? `<div class="group mt"><button class="row tap danger" data-act="admin-remove">Remove API key</button></div>` : ''}`;
+    },
+    foot: () => `<button class="btn" data-act="admin-save" ${state.busy ? 'disabled' : ''}>${state.busy ? '<span class="spinner" style="border-top-color:#fff"></span> Checking…' : 'Save & test'}</button>`,
+  });
 }
 
 // ---------------- Sheets ----------------
@@ -805,9 +832,27 @@ const actions = {
   'test-voice': async () => {
     try { await testCue(store.get().settings.audioMode); } catch (e) { toast('Couldn’t play: ' + e.message); }
   },
-  'test-key': async () => {
-    toast('Contacting Claude…');
-    try { await ai.testKey(); toast('Connected to Claude ✓'); } catch (e) { toast(e.message); }
+  'coach-setup': () => openCoachSetup(),
+  'admin-save': async () => {
+    const s = sheet.admin;
+    const typed = $('#admin-key')?.value.trim();
+    if (typed) store.save(st => { st.settings.apiKey = typed; });
+    if (!store.get().settings.apiKey.trim()) { s.status = 'Paste a key first.'; s.ok = false; sheet.update(); return; }
+    s.busy = true; s.status = ''; sheet.update();
+    try {
+      await ai.testKey();
+      s.ok = true; s.status = 'Connected — the coach is ready.';
+    } catch (e) {
+      s.ok = false; s.status = e.message;
+    }
+    s.busy = false;
+    if (sheet?.admin === s) sheet.update();
+    render();
+  },
+  'admin-remove': () => {
+    if (!confirm('Remove the API key from this iPhone? The coach will stop working until a key is added again.')) return;
+    store.save(st => { st.settings.apiKey = ''; st.pendingReview = null; });
+    sheet.admin.status = ''; sheet.update(); render();
   },
   export: async () => {
     const json = store.exportJSON();
@@ -818,7 +863,7 @@ const actions = {
     } catch (e) { if (e.name !== 'AbortError') toast('Export failed'); }
   },
   reset: () => {
-    if (!confirm('Delete your plan, history and settings from this iPhone?')) return;
+    if (!confirm('Delete your plan, history and settings from this iPhone? (The coach setup is kept.)')) return;
     store.reset(); ui.draft = null; ui.tab = 'today'; render();
   },
 };
@@ -840,7 +885,6 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set && t.type === 'checkbox') store.save(st => { st.settings[t.dataset.set] = t.checked; });
-  if (t.dataset.set === 'apiKey' && ui.draft) render(); // reveal "Build with Claude"
   if (t.dataset.result && t.type === 'checkbox' && sheet?.result) sheet.result[t.dataset.result] = t.checked;
 });
 

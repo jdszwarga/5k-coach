@@ -38,8 +38,11 @@ export function save(mutator) {
   return state;
 }
 
+// Wipes plan, history and preferences, but keeps the admin's coach setup (API key + model).
 export function reset() {
+  const { apiKey, model } = state.settings;
   state = structuredClone(DEFAULTS);
+  Object.assign(state.settings, { apiKey, model });
   save();
 }
 

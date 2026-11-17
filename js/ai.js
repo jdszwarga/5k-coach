@@ -17,7 +17,7 @@ let clientKey = null;
 
 async function client() {
   const key = store.get().settings.apiKey.trim();
-  if (!key) throw new Error('Add your Claude API key in Settings first.');
+  if (!key) throw new Error('The Claude coach isn’t set up yet (Settings → Claude coach).');
   if (!clientPromise || clientKey !== key) {
     clientKey = key;
     clientPromise = import(SDK_URL).then(m => {
@@ -126,7 +126,7 @@ async function ask(prompt, schema) {
 
 function friendlyError(e) {
   const status = e?.status;
-  if (status === 401) return 'Your API key was rejected. Check it in Settings.';
+  if (status === 401) return 'The API key was rejected. Check it in Settings → Claude coach.';
   if (status === 403) return 'This API key doesn’t have access to that model.';
   if (status === 429) return 'Rate limited by the Claude API. Wait a minute and try again.';
   if (status === 400 && /credit|balance/i.test(e?.message || '')) return 'Your Claude API account is out of credit.';
