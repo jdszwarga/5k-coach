@@ -3,7 +3,7 @@ import { generatePlan, LEVELS, workoutFromSession, normWorkout, DEFAULT_WORKOUT,
 import { loadClips, clipsReady, WorkoutPlayer, testCue } from './audio.js';
 import * as ai from './ai.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.8'; // keep in step with CACHE in sw.js (v8)
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sv = (p, size = 24, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -562,7 +562,7 @@ function closeSheet(instant) {
   if (instant) { root.innerHTML = ''; return; }
   $('.sheet-backdrop', root)?.classList.remove('show');
   $('.sheet', root)?.classList.remove('show');
-  setTimeout(() => { if (!sheet) root.innerHTML = ''; }, 380);
+  setTimeout(() => { if (!sheet) { root.innerHTML = ''; reloadIfUpdateReady(); } }, 380);
 }
 
 function enableSwipeDown(el) {
@@ -1066,8 +1066,24 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('beforeunload', e => { if (run && !run.finished) { e.preventDefault(); e.returnValue = ''; } });
 
 // ---------------- Boot ----------------
+// iOS keeps home-screen apps alive in the background, so a new version can sit unused for
+// days. Check for updates whenever the app comes back to the front, and reload into the new
+// version at a safe moment: never during a run or while a sheet/dialog is open.
+let updateReady = false;
+function reloadIfUpdateReady() {
+  if (updateReady && !run && !sheet && !$('.alert-backdrop') && !ui.building && !ui.reviewing) location.reload();
+}
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW', e));
+  const hadController = !!navigator.serviceWorker.controller; // false on the very first visit
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+  }).catch(e => console.warn('SW', e));
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return;
+    updateReady = true;
+    reloadIfUpdateReady();
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reloadIfUpdateReady(); });
 }
 loadClips().catch(e => console.warn('cues', e));
 render();

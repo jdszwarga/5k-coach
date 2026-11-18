@@ -34,4 +34,4 @@ node tools/serve.mjs 5173
 - `python tools/make-cues.py` regenerates the voice clips in `audio/` (NZ neural voice "Molly" via edge-tts + ffmpeg; `--voice` to change).
 - `tools/make-icons.ps1` regenerates the icons.
 - Data lives in `localStorage` on the phone. Your API key never leaves the device except to call `api.anthropic.com`.
-- After changing files, bump `CACHE` in `sw.js` so phones pick up the update.
+- After changing files, bump `CACHE` in `sw.js` and `VERSION` in `js/app.js` (Settings shows it). The app reloads into a new version by itself next time it comes to the front, unless a run or sheet is open.
