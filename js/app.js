@@ -3,7 +3,7 @@ import { generatePlan, LEVELS, workoutFromSession, normWorkout, DEFAULT_WORKOUT,
 import { loadClips, clipsReady, WorkoutPlayer, testCue } from './audio.js';
 import * as ai from './ai.js';
 
-const VERSION = '1.9'; // keep in step with CACHE in sw.js (v9)
+const VERSION = '1.10'; // keep in step with CACHE in sw.js (v10)
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sv = (p, size = 24, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -383,22 +383,52 @@ function viewPlan() {
   const st = store.get();
   const next = store.nextSession();
   const hasKey = !!st.settings.apiKey.trim();
+  const prog = store.progress();
+  // The run that checked off each session (latest wins), and unfinished tries.
+  const doneRun = {}, tries = {};
+  for (const h of st.history) {
+    if (!h.sessionId) continue;
+    if (h.completed) doneRun[h.sessionId] = h;
+    else (tries[h.sessionId] ||= []).push(h);
+  }
+  const feelPill = h => h.feel ? `<span class="feel ${h.feel}">${FEELS.find(f => f.id === h.feel)?.label}</span>` : '';
+
   return `<div class="page">
     <h1 class="large-title">Plan</h1>
     <p class="subtitle">${esc(st.plan.summary)}${st.plan.source === 'claude' ? ' · Made with Claude' : ''}</p>
-    ${st.plan.weeks.map(w => `
-      <div class="week-head"><div class="section-header">Week ${w.week}</div><div class="focus">${esc(w.focus)}</div></div>
+    <div class="plan-progress">
+      <div class="pp-top"><span><b>${prog.done}</b> of ${prog.total} runs done</span><span>${Math.round((prog.done / Math.max(1, prog.total)) * 100)}%</span></div>
+      <div class="pp-bar"><i style="width:${(prog.done / Math.max(1, prog.total)) * 100}%"></i></div>
+    </div>
+    ${st.plan.weeks.map(w => {
+      const nDone = w.sessions.filter(s => store.isDone(s.id)).length;
+      const all = nDone === w.sessions.length;
+      return `
+      <div class="week-head"><div class="section-header">Week ${w.week} <span class="wk-count ${all ? 'all' : ''}">${all ? `${I.check} Done` : `${nDone} of ${w.sessions.length}`}</span></div><div class="focus">${esc(w.focus)}</div></div>
       <div class="group">${w.sessions.map(s0 => {
         const s = { ...s0, week: w.week };
         const wk = workoutFromSession(s);
-        const done = store.isDone(s.id);
+        const run = doneRun[s.id];
         const isNext = next && next.id === s.id;
+        if (run) {
+          // Finished: show what she actually did; tap opens that run.
+          const what = run.manual ? 'Checked off' : `${esc(describe(run.workout))} · ${fmt(run.doneSec)}`;
+          return `<button class="row tap done-row" data-act="history-detail" data-id="${run.id}">
+            <span class="status done">${I.check}</span>
+            <div class="grow"><div class="title">${esc(s.title)}</div>
+              <div class="sub"><span class="done-date">${esc(shortDate(run.date))}</span> · ${what}</div></div>
+            ${feelPill(run)}<span class="chev">${I.chev}</span>
+          </button>`;
+        }
+        const tried = tries[s.id]?.at(-1);
         return `<button class="row tap ${isNext ? 'current' : ''}" data-act="setup" data-id="${s.id}">
-          <span class="status ${done ? 'done' : isNext ? 'next' : ''}">${done ? I.check : ''}</span>
-          <div class="grow"><div class="title">${esc(s.title)}</div><div class="sub">${esc(describe(wk))}</div></div>
+          <span class="status ${isNext ? 'next' : ''}"></span>
+          <div class="grow"><div class="title">${esc(s.title)}</div><div class="sub">${esc(describe(wk))}</div>
+            ${tried ? `<div class="sub tried">Tried ${esc(shortDate(tried.date))} · ${fmt(tried.doneSec)} of ${fmt(tried.totalSec)}</div>` : ''}</div>
           <span class="mins">${minutes(totalSeconds(wk))} min</span><span class="chev">${I.chev}</span>
         </button>`;
-      }).join('')}</div>`).join('')}
+      }).join('')}</div>`;
+    }).join('')}
     <div class="mt-l">
       ${hasKey ? `<button class="btn secondary" data-act="review-from-plan">${I.spark} Review with Claude</button>` : ''}
       <button class="btn plain mt" data-act="edit-plan">Plan settings</button>

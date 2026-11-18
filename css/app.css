@@ -191,6 +191,17 @@ svg { display: block; }
 .row .status.next::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .row .mins { font-size: 15px; color: var(--label2); font-variant-numeric: tabular-nums; }
 .row.current { background: color-mix(in srgb, var(--accent) 10%, var(--card)); }
+.row.done-row .title { color: var(--label2); }
+.row .done-date { color: var(--accent); font-weight: 600; }
+.row .sub.tried { color: var(--warm); }
+.wk-count { margin-left: 6px; font-weight: 600; color: var(--label2); text-transform: none; display: inline-flex; align-items: center; gap: 3px; }
+.wk-count.all { color: var(--accent); }
+.wk-count svg { width: 13px; height: 13px; }
+.plan-progress { background: var(--card); border-radius: var(--radius); padding: 14px 16px; margin-top: 4px; }
+.pp-top { display: flex; justify-content: space-between; font-size: 15px; color: var(--label2); }
+.pp-top b { color: var(--label); font-size: 17px; }
+.pp-bar { height: 8px; border-radius: 4px; background: var(--fill); margin-top: 10px; overflow: hidden; }
+.pp-bar i { display: block; height: 100%; border-radius: 4px; background: var(--accent); transition: width .4s; }
 
 /* History */
 .feel { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--fill); color: var(--label2); }

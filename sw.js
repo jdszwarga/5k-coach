@@ -1,5 +1,5 @@
 // Offline support: cache the app shell; always try the network first so updates land quickly.
-const CACHE = '5k-coach-v9';
+const CACHE = '5k-coach-v10';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/store.js', 'js/plan.js', 'js/audio.js', 'js/ai.js',
