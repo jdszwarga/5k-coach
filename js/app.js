@@ -3,7 +3,7 @@ import { generatePlan, LEVELS, workoutFromSession, normWorkout, DEFAULT_WORKOUT,
 import { loadClips, clipsReady, WorkoutPlayer, testCue } from './audio.js';
 import * as ai from './ai.js';
 
-const VERSION = '1.8'; // keep in step with CACHE in sw.js (v8)
+const VERSION = '1.9'; // keep in step with CACHE in sw.js (v9)
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sv = (p, size = 24, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -426,25 +426,35 @@ function viewHistory() {
 }
 
 function openHistoryDetail(id) {
-  const h = store.get().history.find(x => x.id === id);
-  if (!h) return;
+  const first = store.get().history.find(x => x.id === id);
+  if (!first) return;
   openSheet({
-    title: shortDate(h.date),
-    onClose: () => render(), // reflect edited notes in the list
-    body: () => `
+    title: shortDate(first.date),
+    histId: id,
+    onClose: () => render(), // reflect edits in the list
+    body: () => {
+      const h = store.get().history.find(x => x.id === id) || first;
+      // Any run can be assigned to a plan session (e.g. a run started from "Custom intervals").
+      const doneElsewhere = new Set(store.get().history.filter(x => x.id !== h.id && x.completed && x.sessionId).map(x => x.sessionId));
+      const options = store.allSessions().map(s =>
+        `<option value="${s.id}" ${h.sessionId === s.id ? 'selected' : ''}>${esc(sessionLabel(s))}${doneElsewhere.has(s.id) ? ' ✓' : ''}</option>`).join('');
+      return `
       <div class="summary-card"><div class="muted">${esc(h.sessionLabel || 'Custom run')}</div>
         <div class="big">${fmt(h.doneSec)}<span class="muted" style="font-size:17px"> / ${fmt(h.totalSec)}</span></div>
         <div class="muted">${esc(describe(h.workout))}</div></div>
       <div class="group mt">
-        ${h.sessionId
-          ? `<div class="row"><div class="grow">Counted as done</div>${toggle(h.id, h.completed, 'data-hist-done')}</div>`
-          : `<div class="row"><div class="grow">Counted as done</div><span class="value">${h.completed ? 'Yes' : 'No'}</span></div>`}
+        <div class="row"><div class="grow">Plan session</div>
+          <select data-hist-session="${h.id}"><option value="" ${h.sessionId ? '' : 'selected'}>None (extra run)</option>${options}</select></div>
+        ${h.sessionId ? `<div class="row"><div class="grow">Counted as done</div>${toggle(h.id, h.completed, 'data-hist-done')}</div>` : ''}
         <div class="row"><div class="grow">How it felt</div><span class="value">${FEELS.find(f => f.id === h.feel)?.label || '—'}</span></div>
       </div>
+      <p class="section-footer">Choose the plan session this run was for; it then counts toward your plan. ✓ = already checked off by another run.</p>`
+      + `
       <div class="section-header">Notes</div>
       <div class="group"><label class="row note-row"><textarea data-note="${h.id}" rows="3" enterkeyhint="done" placeholder="Add a note about this run">${esc(h.notes || '')}</textarea></label></div>
       <p class="section-footer">Saved automatically.</p>
-      <div class="group mt"><button class="row tap danger" data-act="delete-run" data-id="${h.id}">Delete run</button></div>`,
+      <div class="group mt"><button class="row tap danger" data-act="delete-run" data-id="${h.id}">Delete run</button></div>`;
+    },
   });
 }
 
@@ -1052,6 +1062,17 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set && t.type === 'checkbox') store.save(st => { st.settings[t.dataset.set] = t.checked; });
   if (t.dataset.result && t.type === 'checkbox' && sheet?.result) sheet.result[t.dataset.result] = t.checked;
+  if (t.dataset.histSession !== undefined) {
+    const s = store.allSessions().find(x => x.id === t.value);
+    store.save(st => {
+      const h = st.history.find(x => x.id === t.dataset.histSession);
+      if (!h) return;
+      if (s) Object.assign(h, { sessionId: s.id, sessionLabel: sessionLabel(s), kind: 'plan', completed: true });
+      else Object.assign(h, { sessionId: null, sessionLabel: null, kind: 'custom', completed: h.doneSec >= h.totalSec - 3 });
+    });
+    if (sheet?.histId === t.dataset.histSession) sheet.update();
+    toast(s ? `Counted as ${sessionLabel(s)}` : 'Removed from plan');
+  }
   if (t.dataset.histDone) store.save(st => { const h = st.history.find(x => x.id === t.dataset.histDone); if (h) h.completed = t.checked; });
 });
 
