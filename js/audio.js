@@ -170,8 +170,16 @@ export class WorkoutPlayer extends EventTarget {
     this.audio.preload = 'auto';
     this.audio.setAttribute('playsinline', '');
     this.wakeLock = null;
+    // Wall clock: `anchor` is the Date.now() at which the workout's 0:00 happened.
+    // If iOS pauses the audio behind our back (e.g. she opens Spotify in Music mix mode),
+    // the clock keeps going and catchUp() jumps the track forward when she comes back.
+    this.anchor = null;
+    this.userPaused = false;
+    this.forcedEnd = false;
     for (const t of ['play', 'pause', 'ended']) this.audio.addEventListener(t, () => this.dispatchEvent(new Event(t)));
-    this._onVis = () => { if (document.visibilityState === 'visible' && this.mode === 'mix' && !this.audio.paused) this.lockScreenOn(); };
+    const reanchor = () => { if (!this.audio.paused && document.visibilityState === 'visible') this.anchor = Date.now() - this.audio.currentTime * 1000; };
+    for (const t of ['playing', 'timeupdate', 'seeked']) this.audio.addEventListener(t, reanchor);
+    this._onVis = () => { if (document.visibilityState === 'visible' && this.mode === 'mix' && !this.userPaused) this.lockScreenOn(); };
   }
 
   load(wk, opts, meta) {
@@ -179,6 +187,7 @@ export class WorkoutPlayer extends EventTarget {
     this.rendered = render(wk, opts);
     this.mode = opts.mode;
     this.audio.src = this.rendered.url;
+    this.anchor = null; this.userPaused = false; this.forcedEnd = false;
     this.meta = meta;
     this.setupMediaSession();
     document.addEventListener('visibilitychange', this._onVis);
@@ -186,17 +195,49 @@ export class WorkoutPlayer extends EventTarget {
   }
 
   async play() {
+    this.userPaused = false;
     setAudioSession(this.mode);
     await this.audio.play();
     if (this.mode === 'mix') this.lockScreenOn();
+    this.updatePosition();
   }
 
-  pause() { this.audio.pause(); }
+  // Only pauses from the app's own buttons count as "she paused".
+  // The clock stops too; it re-anchors when playback actually restarts.
+  pause() { this.userPaused = true; this.anchor = null; this.audio.pause(); this.updatePosition(); }
 
-  get time() { return this.audio.currentTime || 0; }
-  get paused() { return this.audio.paused; }
+  // Where the workout really is: the audio position, or the wall clock if iOS stalled the audio.
+  get time() {
+    const t = this.audio.currentTime || 0;
+    if (this.forcedEnd) return this.rendered ? this.rendered.duration : t;
+    if (this.userPaused || this.anchor == null || !this.rendered) return t;
+    return Math.max(t, Math.min((Date.now() - this.anchor) / 1000, this.rendered.duration));
+  }
+  get paused() { return this.userPaused; }
   // True once the final "Workout complete" message has finished playing.
-  get ended() { return !!this.rendered && (this.audio.ended || this.time >= this.rendered.duration - 0.05); }
+  get ended() { return !!this.rendered && (this.forcedEnd || this.audio.ended || this.time >= this.rendered.duration - 0.05); }
+
+  // Call when the app comes back to the foreground. If the audio fell behind the wall
+  // clock (iOS paused it in the background), jump ahead and resume. Returns seconds skipped.
+  async catchUp() {
+    if (!this.rendered || this.userPaused || this.anchor == null) return 0;
+    const want = (Date.now() - this.anchor) / 1000;
+    const behind = want - (this.audio.currentTime || 0);
+    if (want >= this.rendered.duration - 0.05) { this.forcedEnd = true; this.audio.pause(); return behind; }
+    if (behind > 1) this.audio.currentTime = want;
+    if (this.audio.paused) await this.play();
+    return behind > 1 ? behind : 0;
+  }
+
+  // Lock screen / Now Playing position. Only on changes: iOS extrapolates it itself,
+  // and updating Now Playing every frame makes the Watch's Now Playing screen churn.
+  updatePosition() {
+    if (!this.rendered || !('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
+    try {
+      navigator.mediaSession.setPositionState({ duration: this.rendered.duration, position: Math.min(this.audio.currentTime || 0, this.rendered.duration), playbackRate: 1 });
+      navigator.mediaSession.playbackState = this.userPaused ? 'paused' : 'playing';
+    } catch {}
+  }
 
   async lockScreenOn() {
     try { if ('wakeLock' in navigator && !this.wakeLock) {
@@ -224,6 +265,7 @@ export class WorkoutPlayer extends EventTarget {
     this.audio.pause();
     if (this.rendered) URL.revokeObjectURL(this.rendered.url);
     this.rendered = null;
+    this.anchor = null; this.forcedEnd = false;
     this.audio.removeAttribute('src');
     document.removeEventListener('visibilitychange', this._onVis);
     if (this.wakeLock) { this.wakeLock.release().catch(() => {}); this.wakeLock = null; }

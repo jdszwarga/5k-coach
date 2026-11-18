@@ -19,6 +19,10 @@ iOS limits what web apps can do with audio, so there are two modes (Settings, or
 | **Music mix** (default) | Yes — cues play over Spotify/podcasts | No — the app keeps the screen awake; use the pocket-lock button. Silent mode must be off. |
 | **Screen off** | No — iOS pauses other audio | Yes |
 
+The timer runs on the wall clock: if iOS stops the audio (switching to Spotify in Music mix mode, Siri, a call), the timer keeps counting, and when the app is back on screen the cues jump to the right spot and carry on. Cues missed while the app was in the background aren't replayed.
+
+**Apple Watch:** start the Watch workout as usual and leave this app on the phone. If the Watch workout keeps pausing during walk breaks, turn off Auto-Pause for running (Watch app on iPhone → Workout).
+
 How it works: the whole workout is rendered into one audio track (silence + spoken cues + beeps at exact times) and played as a normal audio file, so cues stay on time even if iOS pauses the page's JavaScript.
 
 ## Development

@@ -47,9 +47,12 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; background: var(--bg); color: var(--label); font-family: var(--font); font-size: 17px; line-height: 1.3; -webkit-font-smoothing: antialiased; }
-body { min-height: 100dvh; overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; -webkit-text-size-adjust: 100%; }
+body { min-height: 100dvh; overscroll-behavior-y: none; -webkit-text-size-adjust: 100%; }
+/* No text selection on controls only. A body-wide user-select:none can stop iOS from opening
+   the keyboard for textareas, so text fields keep the default behaviour. */
+button, .tabbar, .chip, .segmented, .stepper, .run-screen, .pocket, .grabber, .sheet-head, .row.tap, .week-card, .hero { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 input, textarea, select, button { font: inherit; color: inherit; }
-textarea, input[type=text], input[type=password], input[type=date] { -webkit-user-select: text; user-select: text; }
+textarea, input { -webkit-user-select: auto; user-select: auto; -webkit-touch-callout: default; }
 button { cursor: pointer; border: 0; background: none; padding: 0; }
 [hidden] { display: none !important; }
 svg { display: block; }
@@ -81,7 +84,8 @@ svg { display: block; }
 }
 .row input[type=date] { text-align: right; justify-content: flex-end; display: flex; }
 .row input::placeholder { color: var(--label3); }
-.row textarea { flex: 1; border: 0; background: none; outline: none; resize: none; min-height: 72px; font-size: 16px; }
+.row textarea { flex: 1; border: 0; background: none; outline: none; resize: none; min-height: 72px; font-size: 16px; padding: 0; -webkit-appearance: none; appearance: none; }
+.note-row { align-items: stretch; cursor: text; }
 .row.danger { color: var(--red); justify-content: center; }
 .row.link { color: var(--accent); }
 .icon-badge { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: #fff; flex: none; }
@@ -206,7 +210,7 @@ svg { display: block; }
 .sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 40; opacity: 0; transition: opacity .3s; }
 .sheet-backdrop.show { opacity: 1; }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: calc(100dvh - var(--st) - 12px); background: var(--bg); border-radius: 22px 22px 0 0; z-index: 41; transform: translateY(100%); transition: transform .38s cubic-bezier(.2,.9,.25,1); display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; }
-.sheet.show { transform: translateY(0); }
+.sheet.show { transform: none; }
 .sheet .grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--label3); margin: 6px auto 0; flex: none; }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px 4px 20px; flex: none; }
 .sheet-head h3 { font-size: 22px; font-weight: 700; margin: 8px 0; }
@@ -280,3 +284,16 @@ svg { display: block; }
 .center { text-align: center; }
 .mt { margin-top: 16px; }
 .mt-l { margin-top: 28px; }
+
+/* ---------- In-app alert (replaces confirm()) ---------- */
+.alert-backdrop { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.4); display: grid; place-items: center; padding: 24px; opacity: 0; transition: opacity .16s; }
+.alert-backdrop.show { opacity: 1; }
+.alert { width: min(290px, 100%); background: var(--card); border-radius: 16px; overflow: hidden; text-align: center; transform: scale(1.08); transition: transform .16s; box-shadow: var(--shadow); }
+.alert-backdrop.show .alert { transform: none; }
+.alert p { margin: 0; padding: 20px 18px 18px; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.alert-btns { display: flex; border-top: 0.5px solid var(--sep); }
+.alert-btns button { flex: 1; min-height: 46px; font-size: 17px; color: var(--accent); -webkit-user-select: none; user-select: none; }
+.alert-btns button + button { border-left: 0.5px solid var(--sep); }
+.alert-btns button.strong { font-weight: 600; }
+.alert-btns button.danger { color: var(--red); font-weight: 600; }
+.alert-btns button:active { background: var(--fill); }

@@ -46,6 +46,28 @@ function toast(msg) {
   toast.t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+// In-app replacement for confirm(). iOS home-screen apps can lose the keyboard
+// (textareas won't open it) after a native confirm()/alert(), so we never use those.
+function confirmBox(message, { ok = 'OK', cancel = 'Cancel', danger = false } = {}) {
+  return new Promise(resolve => {
+    const el = document.createElement('div');
+    el.className = 'alert-backdrop';
+    el.innerHTML = `<div class="alert" role="alertdialog" aria-modal="true" aria-label="${esc(message)}">
+      <p>${esc(message)}</p>
+      <div class="alert-btns"><button data-r="0">${esc(cancel)}</button><button data-r="1" class="${danger ? 'danger' : 'strong'}">${esc(ok)}</button></div></div>`;
+    el.addEventListener('click', e => {
+      const b = e.target.closest('button[data-r]');
+      if (!b) return;
+      e.stopPropagation();
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 160);
+      resolve(b.dataset.r === '1');
+    });
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+  });
+}
+
 const minutes = sec => Math.round(sec / 60);
 const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -176,8 +198,8 @@ function checkDraft() {
   return true;
 }
 
-function confirmReplace() {
-  return !store.get().plan || confirm('Replace your current plan? Completed runs stay in History.');
+async function confirmReplace() {
+  return !store.get().plan || confirmBox('Replace your current plan? Completed runs stay in History.', { ok: 'Replace' });
 }
 
 // ---------------- Today ----------------
@@ -408,6 +430,7 @@ function openHistoryDetail(id) {
   if (!h) return;
   openSheet({
     title: shortDate(h.date),
+    onClose: () => render(), // reflect edited notes in the list
     body: () => `
       <div class="summary-card"><div class="muted">${esc(h.sessionLabel || 'Custom run')}</div>
         <div class="big">${fmt(h.doneSec)}<span class="muted" style="font-size:17px"> / ${fmt(h.totalSec)}</span></div>
@@ -415,8 +438,10 @@ function openHistoryDetail(id) {
       <div class="group mt">
         <div class="row"><div class="grow">Counted as done</div><span class="value">${h.completed ? 'Yes' : 'No'}</span></div>
         <div class="row"><div class="grow">How it felt</div><span class="value">${FEELS.find(f => f.id === h.feel)?.label || '—'}</span></div>
-        ${h.notes ? `<div class="row"><div class="grow" style="-webkit-user-select:text;user-select:text">${esc(h.notes)}</div></div>` : ''}
       </div>
+      <div class="section-header">Notes</div>
+      <div class="group"><label class="row note-row"><textarea data-note="${h.id}" rows="3" enterkeyhint="done" placeholder="Add a note about this run">${esc(h.notes || '')}</textarea></label></div>
+      <p class="section-footer">Saved automatically.</p>
       <div class="group mt"><button class="row tap danger" data-act="delete-run" data-id="${h.id}">Delete run</button></div>`,
   });
 }
@@ -620,9 +645,9 @@ function openSetup(sessionId, extra = null) {
 }
 
 // Lets a run done without the app (treadmill, forgot phone…) still count toward the week.
-function markDone() {
+async function markDone() {
   const { session, wk } = sheet;
-  if (!confirm(`Check off ${sessionLabel(session)} as done?`)) return;
+  if (!(await confirmBox(`Check off ${sessionLabel(session)} as done?`, { ok: 'Check off' }))) return;
   closeSheet();
   const total = totalSeconds(wk);
   store.save(st => {
@@ -667,7 +692,7 @@ async function startRun() {
     console.warn(e);
     $('.start-overlay').hidden = false; // needs a fresh tap (autoplay rules)
   }
-  tick();
+  scheduleTick();
 }
 
 function mountRunScreen(meta) {
@@ -738,12 +763,34 @@ function tick() {
     $('#p-p', pk).textContent = seg ? PHASE_NAMES[seg.type] : 'DONE';
     pk.style.setProperty('--c', getComputedStyle(screen).getPropertyValue('--c'));
   }
-  if ('mediaSession' in navigator && navigator.mediaSession.setPositionState && !player.paused) {
-    try { navigator.mediaSession.setPositionState({ duration: player.rendered.duration, position: Math.min(player.time, player.rendered.duration), playbackRate: 1 }); } catch {}
+  // iOS paused the audio while we're on screen (Siri, a call, another app's sound…): catch up.
+  if (!player.paused && player.audio.paused && document.visibilityState === 'visible' && Date.now() - (run.lastCatchUp || 0) > 2000) {
+    run.lastCatchUp = Date.now();
+    resumeAfterInterruption();
   }
 
   if (player.ended && !run.finished) { finishRun(true); return; }
-  requestAnimationFrame(tick);
+  scheduleTick();
+}
+
+function scheduleTick() {
+  if (!run) return;
+  cancelAnimationFrame(run.raf);
+  run.raf = requestAnimationFrame(tick);
+}
+
+// Jump the audio to where the workout really is (the clock never stops) and keep going.
+async function resumeAfterInterruption() {
+  if (!run || run.finished) return;
+  try {
+    await player.catchUp();
+    $('.start-overlay') && ($('.start-overlay').hidden = true);
+  } catch (e) {
+    // iOS wants a tap before audio can restart.
+    const ov = $('.start-overlay');
+    if (ov) { ov.hidden = false; $('button', ov).innerHTML = `${I.play.replace(/34/g, '22')} Tap to resume cues`; }
+  }
+  if (player.ended && !run.finished) finishRun(true); else scheduleTick();
 }
 
 function openPocket() {
@@ -767,6 +814,7 @@ function openPocket() {
 function finishRun(reachedEnd) {
   if (!run || run.finished) return;
   run.finished = true;
+  cancelAnimationFrame(run.raf);
   const doneSec = reachedEnd ? run.end : Math.min(player.time, run.end);
   player.pause();
   const r = run;
@@ -792,7 +840,8 @@ function finishRun(reachedEnd) {
       <div class="section-header">How did it feel?</div>
       <div class="segmented" style="background:var(--card)">${FEELS.map(f => `<button data-act="feel" data-v="${f.id}" class="${result.feel === f.id ? 'on' : ''}">${f.label}</button>`).join('')}</div>
       ${r.session ? `<div class="group mt"><div class="row"><div class="grow">Count session as done</div>${toggle('completed', result.completed, 'data-result')}</div></div>` : ''}
-      <div class="group mt"><div class="row"><textarea data-result="notes" placeholder="Notes (optional) — e.g. calves tight, felt strong on the last run">${esc(result.notes)}</textarea></div></div>`,
+      <div class="section-header">Notes</div>
+      <div class="group"><label class="row note-row"><textarea data-result="notes" rows="3" enterkeyhint="done" placeholder="Optional — e.g. calves tight, felt strong on the last run">${esc(result.notes)}</textarea></label></div>`,
     foot: () => `<button class="btn" data-act="save-run">Save</button><button class="btn plain" data-act="discard-run">Don’t save</button>`,
     result, r, doneSec,
   });
@@ -838,13 +887,13 @@ const actions = {
     if (k === 'paceMi') d.paceMi = Math.max(7, Math.min(18, Math.round((d.paceMi + dir * 0.25) * 4) / 4));
     render();
   },
-  'build-local': () => {
-    if (!checkDraft() || !confirmReplace()) return;
+  'build-local': async () => {
+    if (!checkDraft() || !(await confirmReplace())) return;
     const d = ui.draft;
     savePlan(generatePlan({ ...d }));
   },
   'build-claude': async () => {
-    if (!checkDraft() || !confirmReplace()) return;
+    if (!checkDraft() || !(await confirmReplace())) return;
     const d = ui.draft;
     ui.building = true; ui.buildError = null; render();
     try {
@@ -884,19 +933,23 @@ const actions = {
   'bonus-run': () => openSetup(null, { kind: 'bonus', wk: bonusWorkout(), label: 'Bonus run' }),
 
   'run-toggle': () => { if (player.paused) player.play().catch(() => {}); else player.pause(); },
-  'run-resume': () => { $('.start-overlay').hidden = true; player.play().catch(e => toast(e.message)); },
-  'run-end': () => {
+  'run-resume': () => {
+    $('.start-overlay').hidden = true;
+    // First start, or resuming after iOS stopped the audio: either way, line up with the clock.
+    (player.anchor == null ? player.play() : player.catchUp()).catch(e => toast(e.message));
+  },
+  'run-end': async () => {
     if (!run) return;
     const wasPlaying = !player.paused;
     player.pause();
-    if (confirm('End this run?')) finishRun(false);
-    else if (wasPlaying) player.play().catch(() => {});
+    if (await confirmBox('End this run?', { ok: 'End run', cancel: 'Keep going', danger: true })) finishRun(false);
+    else if (wasPlaying && run) player.play().catch(() => {});
   },
   pocket: () => openPocket(),
 
   feel: el => { sheet.result.feel = sheet.result.feel === el.dataset.v ? null : el.dataset.v; sheet.update(); },
   'save-run': () => saveRun(false),
-  'discard-run': () => { if (confirm('Discard this run?')) saveRun(true); },
+  'discard-run': async () => { if (await confirmBox('Discard this run?', { ok: 'Discard', danger: true })) saveRun(true); },
 
   review: () => runReview(),
   'review-from-plan': () => { ui.tab = 'today'; window.scrollTo(0, 0); runReview(); },
@@ -908,8 +961,8 @@ const actions = {
   'dismiss-review': () => { store.save(st => { st.pendingReview = null; }); render(); },
 
   'history-detail': el => openHistoryDetail(el.dataset.id),
-  'delete-run': el => {
-    if (!confirm('Delete this run?')) return;
+  'delete-run': async el => {
+    if (!(await confirmBox('Delete this run?', { ok: 'Delete', danger: true }))) return;
     store.save(st => { st.history = st.history.filter(h => h.id !== el.dataset.id); });
     closeSheet(); render();
   },
@@ -934,8 +987,8 @@ const actions = {
     if (sheet?.admin === s) sheet.update();
     render();
   },
-  'admin-remove': () => {
-    if (!confirm('Remove the API key from this iPhone? The coach will stop working until a key is added again.')) return;
+  'admin-remove': async () => {
+    if (!(await confirmBox('Remove the API key from this iPhone? The coach will stop working until a key is added again.', { ok: 'Remove', danger: true }))) return;
     store.save(st => { st.settings.apiKey = ''; st.pendingReview = null; });
     sheet.admin.status = ''; sheet.update(); render();
   },
@@ -947,8 +1000,8 @@ const actions = {
       else { await navigator.clipboard.writeText(json); toast('Copied to clipboard'); }
     } catch (e) { if (e.name !== 'AbortError') toast('Export failed'); }
   },
-  reset: () => {
-    if (!confirm('Delete your plan, history and settings from this iPhone? (The coach setup is kept.)')) return;
+  reset: async () => {
+    if (!(await confirmBox('Delete your plan, history and settings from this iPhone? (The coach setup is kept.)', { ok: 'Delete all', danger: true }))) return;
     store.reset(); ui.draft = null; ui.tab = 'today'; render();
   },
 };
@@ -965,6 +1018,7 @@ document.addEventListener('input', e => {
   if (t.dataset.set && t.type !== 'checkbox') store.save(st => { st.settings[t.dataset.set] = t.value; });
   if (t.dataset.draft && ui.draft) ui.draft[t.dataset.draft] = t.value;
   if (t.dataset.result && sheet?.result && t.type !== 'checkbox') sheet.result[t.dataset.result] = t.value;
+  if (t.dataset.note) store.save(st => { const h = st.history.find(x => x.id === t.dataset.note); if (h) h.notes = t.value; });
 });
 
 document.addEventListener('change', e => {
@@ -973,9 +1027,10 @@ document.addEventListener('change', e => {
   if (t.dataset.result && t.type === 'checkbox' && sheet?.result) sheet.result[t.dataset.result] = t.checked;
 });
 
+// Back from another app: the timer kept counting while she was away, so jump the cues forward.
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && run && !run.finished) {
-    if (player.ended) finishRun(true); else tick();
+    if (player.ended) finishRun(true); else resumeAfterInterruption();
   }
 });
 
