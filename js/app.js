@@ -436,7 +436,9 @@ function openHistoryDetail(id) {
         <div class="big">${fmt(h.doneSec)}<span class="muted" style="font-size:17px"> / ${fmt(h.totalSec)}</span></div>
         <div class="muted">${esc(describe(h.workout))}</div></div>
       <div class="group mt">
-        <div class="row"><div class="grow">Counted as done</div><span class="value">${h.completed ? 'Yes' : 'No'}</span></div>
+        ${h.sessionId
+          ? `<div class="row"><div class="grow">Counted as done</div>${toggle(h.id, h.completed, 'data-hist-done')}</div>`
+          : `<div class="row"><div class="grow">Counted as done</div><span class="value">${h.completed ? 'Yes' : 'No'}</span></div>`}
         <div class="row"><div class="grow">How it felt</div><span class="value">${FEELS.find(f => f.id === h.feel)?.label || '—'}</span></div>
       </div>
       <div class="section-header">Notes</div>
@@ -659,6 +661,16 @@ function rememberSetup() {
 // Lets a run done without the app (treadmill, forgot phone…) still count toward the week.
 async function markDone() {
   const { session, wk } = sheet;
+  const earlier = [...store.get().history].reverse().find(h => h.sessionId === session.id && !h.completed);
+  if (earlier) {
+    const msg = `Count your run from ${shortDate(earlier.date)} (${describe(earlier.workout)}, ${fmt(earlier.doneSec)}) as ${sessionLabel(session)}?`;
+    if (!(await confirmBox(msg, { ok: 'Count it' }))) return;
+    closeSheet();
+    store.save(st => { const h = st.history.find(x => x.id === earlier.id); if (h) h.completed = true; });
+    render();
+    toast('Checked off ✓');
+    return;
+  }
   if (!(await confirmBox(`Check off ${sessionLabel(session)} as done?`, { ok: 'Check off' }))) return;
   closeSheet();
   const total = totalSeconds(wk);
@@ -832,7 +844,7 @@ function finishRun(reachedEnd) {
   const r = run;
   const runs = r.segs.filter(s => s.type === 'run');
   const mainDone = runs.length ? doneSec >= runs[runs.length - 1].end - 3 : doneSec >= r.end - 3;
-  const result = { feel: null, notes: '', completed: mainDone };
+  const result = { feel: null, notes: '', completed: mainDone || doneSec >= r.end * 0.75 };
 
   $('#pocket')?.remove();
   $('#run-root').innerHTML = '';
@@ -851,7 +863,8 @@ function finishRun(reachedEnd) {
       </div>
       <div class="section-header">How did it feel?</div>
       <div class="segmented" style="background:var(--card)">${FEELS.map(f => `<button data-act="feel" data-v="${f.id}" class="${result.feel === f.id ? 'on' : ''}">${f.label}</button>`).join('')}</div>
-      ${r.session ? `<div class="group mt"><div class="row"><div class="grow">Count session as done</div>${toggle('completed', result.completed, 'data-result')}</div></div>` : ''}
+      ${r.session ? `<div class="group mt"><div class="row"><div class="grow">Count session as done</div>${toggle('completed', result.completed, 'data-result')}</div></div>
+        <p class="section-footer">On moves you to the next session; off repeats this one. You can change it later in History.</p>` : ''}
       <div class="section-header">Notes</div>
       <div class="group"><label class="row note-row"><textarea data-result="notes" rows="3" enterkeyhint="done" placeholder="Optional — e.g. calves tight, felt strong on the last run">${esc(result.notes)}</textarea></label></div>`,
     foot: () => `<button class="btn" data-act="save-run">Save</button><button class="btn plain" data-act="discard-run">Don’t save</button>`,
@@ -1039,6 +1052,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set && t.type === 'checkbox') store.save(st => { st.settings[t.dataset.set] = t.checked; });
   if (t.dataset.result && t.type === 'checkbox' && sheet?.result) sheet.result[t.dataset.result] = t.checked;
+  if (t.dataset.histDone) store.save(st => { const h = st.history.find(x => x.id === t.dataset.histDone); if (h) h.completed = t.checked; });
 });
 
 // Back from another app: the timer kept counting while she was away, so jump the cues forward.
