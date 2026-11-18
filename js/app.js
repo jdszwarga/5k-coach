@@ -592,7 +592,13 @@ function openSetup(sessionId, extra = null) {
   const st = store.get();
   const session = !extra && sessionId ? store.allSessions().find(s => s.id === sessionId) : null;
   const planned = session || store.nextSession();
-  let wk = extra ? normWorkout(extra.wk)
+  // Interval edits are remembered per session (for a day), so closing the sheet, the app
+  // reloading, or restarting after an interrupted run doesn't reset them to the plan.
+  const draftKey = extra ? `${extra.kind}:${extra.label}` : session ? session.id : 'custom';
+  const d = st.setupDraft;
+  const draft = d && d.key === draftKey && Date.now() - d.at < 864e5 ? normWorkout(d.wk) : null;
+  let wk = draft ? draft
+    : extra ? normWorkout(extra.wk)
     : session ? workoutFromSession(session)
       : st.lastWorkout ? normWorkout(st.lastWorkout)
         : planned ? workoutFromSession(planned)
@@ -605,6 +611,7 @@ function openSetup(sessionId, extra = null) {
   openSheet({
     title,
     session,
+    draftKey,
     kind: extra ? extra.kind : session ? 'plan' : 'custom',
     label: title,
     sugg,
@@ -642,6 +649,11 @@ function openSetup(sessionId, extra = null) {
     foot: () => `<button class="btn" data-act="start-run">${I.play.replace(/34/g, '22')} Start</button>
       ${canMark ? `<button class="btn plain" data-act="mark-done">Check off without the timer</button>` : ''}`,
   });
+}
+
+function rememberSetup() {
+  const { draftKey, wk } = sheet;
+  store.save(st => { st.setupDraft = { key: draftKey, wk: { ...wk }, at: Date.now() }; });
 }
 
 // Lets a run done without the app (treadmill, forgot phone…) still count toward the week.
@@ -914,10 +926,12 @@ const actions = {
     const [lo, hi] = LIMITS[k];
     wk[k] = Math.max(lo, Math.min(hi, wk[k] + d * stepFor(k, wk[k], d)));
     sheet.wk = wk;
+    rememberSetup();
     sheet.update();
   },
   'wk-sugg': el => {
     sheet.wk = { ...sheet.sugg[+el.dataset.i].wk };
+    rememberSetup();
     sheet.update();
   },
   'audio-mode': el => {
