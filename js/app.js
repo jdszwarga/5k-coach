@@ -5,7 +5,7 @@ import * as ai from './ai.js';
 import { GpsTracker, miText, paceSec } from './gps.js';
 import { routeHTML, mountMap } from './route.js';
 
-const VERSION = '1.11'; // keep in step with CACHE in sw.js (v11)
+const VERSION = '1.12'; // keep in step with CACHE in sw.js (v12)
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sv = (p, size = 24, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -811,6 +811,13 @@ function gpsLine(g) {
   return `Pace ${paceFmt(g.currentPace())} · Avg ${paceFmt(g.avgPace())}`;
 }
 
+// Pocket-lock screen: just the distance, dim like the rest of it.
+function pocketDist(g) {
+  if (g.status === 'denied' || g.status === 'unavailable') return 'No GPS';
+  if (g.status !== 'ok' && !g.distM) return 'Finding GPS…';
+  return `${miText(g.distM)} mi`;
+}
+
 function mountRunScreen(meta) {
   const r = 140, C = 2 * Math.PI * r;
   run.C = C;
@@ -880,6 +887,8 @@ function tick() {
       run.gpsUi = Date.now();
       $('#r-dist').textContent = run.gps.distM || run.gps.status === 'ok' || run.gps.status === 'searching' ? miText(run.gps.distM) : '—';
       $('#r-gps').textContent = gpsLine(run.gps);
+      const pd = $('#p-d');
+      if (pd) pd.textContent = pocketDist(run.gps);
     }
   }
   const tg = $('#r-toggle');
@@ -925,6 +934,7 @@ function openPocket() {
   const el = document.createElement('div');
   el.className = 'pocket'; el.id = 'pocket';
   el.innerHTML = `<div class="pp" id="p-p"></div><div class="pt" id="p-t"></div>
+    ${run?.gps ? `<div class="pd" id="p-d">${pocketDist(run.gps)}</div>` : ''}
     <div class="hold" id="p-hold">${I.lock}<svg class="ring" width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="42" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="3" stroke-dasharray="264" stroke-dashoffset="264" id="p-ring"/></svg></div>
     <small>Hold to unlock</small>`;
   document.body.appendChild(el);

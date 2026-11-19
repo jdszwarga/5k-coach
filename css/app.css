@@ -299,6 +299,7 @@ svg { display: block; }
 .pocket { position: fixed; inset: 0; z-index: 70; background: #000; color: rgba(255,255,255,.35); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; touch-action: none; }
 .pocket .pt { font-family: var(--round); font-size: 64px; font-weight: 700; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.4); }
 .pocket .pp { font-size: 22px; font-weight: 700; color: var(--c, #30d158); opacity: .55; }
+.pocket .pd { font-family: var(--round); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.4); }
 .pocket .hold { margin-top: 40px; width: 84px; height: 84px; border-radius: 50%; border: 2px solid rgba(255,255,255,.2); display: grid; place-items: center; position: relative; }
 .pocket .hold svg.ring { position: absolute; inset: -2px; transform: rotate(-90deg); }
 .pocket small { font-size: 13px; }
