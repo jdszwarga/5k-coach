@@ -21,6 +21,15 @@ iOS limits what web apps can do with audio, so there are two modes (Settings, or
 
 The timer runs on the wall clock: if iOS stops the audio (switching to Spotify in Music mix mode, Siri, a call), the timer keeps counting, and when the app is back on screen the cues jump to the right spot and carry on. Cues missed while the app was in the background aren't replayed.
 
+## Distance (GPS)
+
+On by default (Settings → Distance). During a run the app records GPS fixes, drops poor ones (accuracy worse than 35 m, or jumps faster than 8 m/s) and adds up the distance. The run screen shows miles plus current and average pace; History shows distance, average pace and a map of the route.
+
+- **Music mix** keeps the screen awake, so GPS covers the whole run.
+- **Screen off**: iOS pauses the page — and location — while the phone is locked. When a fix arrives after a gap, it's joined to the last one with a straight line: that counts toward distance (usually a bit short) and is drawn dashed on the map.
+- Maps use [Leaflet](https://leafletjs.com) 1.9.4 from unpkg with OpenStreetMap tiles, loaded only when a map is shown. Offline, or if tiles fail, a plain route trace is shown instead.
+- Stored per run: `distM`, `gpsSec` and a thinned `track` (`pts` of `[lat, lng, sec]` rounded to 5 decimals, plus `gap`/`brk` point indices). Runs from before GPS have none of these.
+
 **Apple Watch:** start the Watch workout as usual and leave this app on the phone. If the Watch workout keeps pausing during walk breaks, turn off Auto-Pause for running (Watch app on iPhone → Workout).
 
 How it works: the whole workout is rendered into one audio track (silence + spoken cues + beeps at exact times) and played as a normal audio file, so cues stay on time even if iOS pauses the page's JavaScript.

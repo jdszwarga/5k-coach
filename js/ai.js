@@ -204,7 +204,7 @@ export async function reviewRuns() {
         : 'extra custom run — does not advance the plan';
   const recent = st.history.slice(-10).map(h => {
     const pct = Math.round((h.doneSec / h.totalSec) * 100);
-    return `- ${localDate(h.date)} (${kindText(h)}): ${describe(h.workout)}; finished ${pct}% (${h.completed ? 'counted as done' : 'not counted'}); felt ${h.feel || 'not rated'}${h.notes ? `; notes: "${h.notes}"` : ''}`;
+    return `- ${localDate(h.date)} (${kindText(h)}): ${describe(h.workout)}; finished ${pct}% (${h.completed ? 'counted as done' : 'not counted'});${h.distM ? ` GPS ${(h.distM / 1609.344).toFixed(2)} mi;` : ''} felt ${h.feel || 'not rated'}${h.notes ? `; notes: "${h.notes}"` : ''}`;
   }).join('\n');
 
   const prog = store.progress();

@@ -9,11 +9,14 @@ const DEFAULTS = {
     beeps: true,
     halfway: true,
     autoReview: true,
+    gps: true,             // record distance/pace/route during runs
   },
   pendingReview: null,     // last Claude review waiting for Apply / Keep
   profile: null,           // { weeks, perWeek, level, paceMi (min/mile), startDate, notes }
   plan: null,              // { createdAt, source, summary, weeks:[{ week, focus, sessions:[...] }] }
-  history: [],             // [{ id, date, sessionId, workout, totalSec, doneSec, completed, feel, notes }]
+  history: [],             // [{ id, date, sessionId, workout, totalSec, doneSec, completed, feel, notes,
+                           //    distM?, gpsSec?, track? }]  — GPS fields only on runs that recorded a track
+                           //    (older runs have none). track format: see js/gps.js pack().
   lastWorkout: null,
 };
 

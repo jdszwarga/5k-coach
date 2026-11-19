@@ -2,8 +2,10 @@ import * as store from './store.js';
 import { generatePlan, LEVELS, workoutFromSession, normWorkout, DEFAULT_WORKOUT, segmentsFor, totalSeconds, fmt, dur, describe, suggestions, goalSeconds, paceText } from './plan.js';
 import { loadClips, clipsReady, WorkoutPlayer, testCue } from './audio.js';
 import * as ai from './ai.js';
+import { GpsTracker, miText, paceSec } from './gps.js';
+import { routeHTML, mountMap } from './route.js';
 
-const VERSION = '1.10'; // keep in step with CACHE in sw.js (v10)
+const VERSION = '1.11'; // keep in step with CACHE in sw.js (v11)
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sv = (p, size = 24, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -74,6 +76,11 @@ const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() ==
 const LOCALE = 'en-US';
 const shortDate = iso => new Date(iso).toLocaleDateString(LOCALE, { weekday: 'short', month: 'short', day: 'numeric' });
 const isStandalone = () => navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+const paceFmt = p => p ? `${fmt(p)} /mi` : '—';
+const runPace = h => paceSec(h.distM, h.gpsSec || h.doneSec);
+const distOf = list => list.reduce((a, h) => a + (h.distM || 0), 0);
+// " · 1.42 mi" for runs that recorded distance; old runs (no GPS) show nothing.
+const distBit = h => h.distM ? ` · ${miText(h.distM)} mi` : '';
 
 function ring(pct, size = 64, stroke = 8, color = 'var(--accent)', track = 'var(--fill)') {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r;
@@ -403,8 +410,10 @@ function viewPlan() {
     ${st.plan.weeks.map(w => {
       const nDone = w.sessions.filter(s => store.isDone(s.id)).length;
       const all = nDone === w.sessions.length;
+      const ids = new Set(w.sessions.map(s => s.id));
+      const wkDist = distOf(st.history.filter(h => ids.has(h.sessionId)));
       return `
-      <div class="week-head"><div class="section-header">Week ${w.week} <span class="wk-count ${all ? 'all' : ''}">${all ? `${I.check} Done` : `${nDone} of ${w.sessions.length}`}</span></div><div class="focus">${esc(w.focus)}</div></div>
+      <div class="week-head"><div class="section-header">Week ${w.week} <span class="wk-count ${all ? 'all' : ''}">${all ? `${I.check} Done` : `${nDone} of ${w.sessions.length}`}</span>${wkDist ? `<span class="wk-dist">${miText(wkDist)} mi</span>` : ''}</div><div class="focus">${esc(w.focus)}</div></div>
       <div class="group">${w.sessions.map(s0 => {
         const s = { ...s0, week: w.week };
         const wk = workoutFromSession(s);
@@ -412,7 +421,7 @@ function viewPlan() {
         const isNext = next && next.id === s.id;
         if (run) {
           // Finished: show what she actually did; tap opens that run.
-          const what = run.manual ? 'Checked off' : `${esc(describe(run.workout))} · ${fmt(run.doneSec)}`;
+          const what = run.manual ? 'Checked off' : `${esc(describe(run.workout))} · ${fmt(run.doneSec)}${distBit(run)}`;
           return `<button class="row tap done-row" data-act="history-detail" data-id="${run.id}">
             <span class="status done">${I.check}</span>
             <div class="grow"><div class="title">${esc(s.title)}</div>
@@ -445,11 +454,11 @@ function viewHistory() {
       <div class="empty">${I.shoe}<div style="font-weight:600;color:var(--label)">No runs yet</div><div>Your completed runs will show up here.</div></div></div>`;
   }
   return `<div class="page"><h1 class="large-title">History</h1>
-    <p class="subtitle">${list.length} run${list.length === 1 ? '' : 's'} · ${minutes(list.reduce((a, h) => a + h.doneSec, 0))} minutes</p>
+    <p class="subtitle">${list.length} run${list.length === 1 ? '' : 's'} · ${minutes(list.reduce((a, h) => a + h.doneSec, 0))} minutes${distOf(list) ? ` · ${miText(distOf(list))} miles` : ''}</p>
     <div class="group">${list.map(h => `
       <button class="row tap" data-act="history-detail" data-id="${h.id}">
         <div class="grow"><div class="title">${esc(shortDate(h.date))}${h.sessionLabel ? ` · <span style="color:var(--label2)">${esc(h.sessionLabel)}</span>` : ''}</div>
-          <div class="sub">${esc(describe(h.workout))} · ${fmt(h.doneSec)}${h.completed ? '' : ' (partial)'}</div></div>
+          <div class="sub">${esc(describe(h.workout))} · ${fmt(h.doneSec)}${distBit(h)}${h.completed ? '' : ' (partial)'}</div></div>
         ${h.feel ? `<span class="feel ${h.feel}">${FEELS.find(f => f.id === h.feel)?.label}</span>` : ''}
         <span class="chev">${I.chev}</span>
       </button>`).join('')}</div></div>`;
@@ -472,6 +481,7 @@ function openHistoryDetail(id) {
       <div class="summary-card"><div class="muted">${esc(h.sessionLabel || 'Custom run')}</div>
         <div class="big">${fmt(h.doneSec)}<span class="muted" style="font-size:17px"> / ${fmt(h.totalSec)}</span></div>
         <div class="muted">${esc(describe(h.workout))}</div></div>
+      ${gpsBlock(h)}
       <div class="group mt">
         <div class="row"><div class="grow">Plan session</div>
           <select data-hist-session="${h.id}"><option value="" ${h.sessionId ? '' : 'selected'}>None (extra run)</option>${options}</select></div>
@@ -485,7 +495,27 @@ function openHistoryDetail(id) {
       <p class="section-footer">Saved automatically.</p>
       <div class="group mt"><button class="row tap danger" data-act="delete-run" data-id="${h.id}">Delete run</button></div>`;
     },
+    afterUpdate: () => keepRoute(first.track),
   });
+}
+
+// Distance, pace and route for a run (history detail and the post-run summary).
+function gpsBlock(h) {
+  if (!h.distM) return '';
+  return `<div class="dist-card">
+      <div class="dist-stats"><div><div class="k">Distance</div><div class="v">${miText(h.distM)}<small> mi</small></div></div>
+        <div><div class="k">Avg pace</div><div class="v">${runPace(h) ? fmt(runPace(h)) : '—'}<small> /mi</small></div></div></div>
+      ${h.track ? routeHTML(h.track) : ''}
+    </div>
+    ${h.track?.gap?.length ? '<p class="section-footer">Dashed lines are GPS gaps (iOS pauses location while the screen is locked), joined with a straight line. Distance is most accurate in Music mix mode.</p>' : ''}`;
+}
+
+// sheet.update() re-renders the body; keep the same map element so it isn't rebuilt each time.
+function keepRoute(track) {
+  const slot = $('#sheet-root .sheet-body [data-route]');
+  if (!slot || !track || !sheet) return;
+  if (sheet.routeEl && sheet.routeEl !== slot) slot.replaceWith(sheet.routeEl);
+  else { sheet.routeEl = slot; mountMap(slot, track); }
 }
 
 // ---------------- Settings ----------------
@@ -508,6 +538,12 @@ function viewSettings() {
       <button class="row tap link" data-act="test-voice">Test voice cue</button>
     </div>
     <p class="section-footer">${audioModeHelp(s.audioMode)}</p>
+
+    <div class="section-header">Distance</div>
+    <div class="group">
+      <div class="row"><div class="grow">Track distance with GPS</div>${toggle('gps', s.gps !== false)}</div>
+    </div>
+    <p class="section-footer">Records distance, pace and a map of your route. iPhone asks for location access on your first run. Distance is most accurate in <b>Music mix</b> mode: with the screen off, iOS pauses location while the phone is locked, so those stretches are joined with a straight line (dashed on the map) and usually come out a little short. Maps need a connection; offline you’ll see the route shape.</p>
 
     <div class="section-header">Coach</div>
     <div class="group">
@@ -535,7 +571,7 @@ function viewSettings() {
 
 function audioModeHelp(mode) {
   return mode === 'locked'
-    ? 'Screen off: cues keep playing with your iPhone locked in your pocket, but iOS pauses Spotify/podcasts while a workout plays.'
+    ? `Screen off: cues keep playing with your iPhone locked in your pocket, but iOS pauses Spotify/podcasts while a workout plays.${store.get().settings.gps !== false ? ' GPS pauses while the phone is locked, so distance will have gaps.' : ''}`
     : 'Music mix: cues play over Spotify/podcasts. iOS mutes web audio when the screen locks, so the app keeps the screen awake — use the pocket lock button. Make sure Silent mode is off.';
 }
 
@@ -584,6 +620,7 @@ function openSheet(opts) {
     const foot = $('.sheet-foot', root);
     foot.innerHTML = opts.foot ? opts.foot() : '';
     foot.hidden = !opts.foot;
+    opts.afterUpdate?.();
   };
   opts.update();
   opts.onMount?.();
@@ -749,6 +786,8 @@ async function startRun() {
     return;
   }
   run = { wk, session, kind, label, segs: rendered.segs, end: rendered.end, pocket: false, finished: false, startedAt: new Date().toISOString() };
+  // GPS is optional: if it's off, denied or missing, the run screen just shows the timer.
+  if (st.settings.gps !== false) run.gps = new GpsTracker(() => player.time);
   mountRunScreen(meta);
   try {
     await player.play();
@@ -756,7 +795,20 @@ async function startRun() {
     console.warn(e);
     $('.start-overlay').hidden = false; // needs a fresh tap (autoplay rules)
   }
+  // Started after the audio so the location prompt (first run only) can't get in the way of play().
+  if (run?.gps) {
+    const g = run.gps;
+    g.onchange = () => { if (g.status === 'denied' && !g.toldDenied) { g.toldDenied = true; toast('No location access — the timer still works'); } };
+    g.start();
+  }
   scheduleTick();
+}
+
+function gpsLine(g) {
+  if (g.status === 'denied') return 'Location access is off — no distance this run';
+  if (g.status === 'unavailable') return 'GPS isn’t available — no distance this run';
+  if (g.status !== 'ok') return 'Finding GPS…';
+  return `Pace ${paceFmt(g.currentPace())} · Avg ${paceFmt(g.avgPace())}`;
 }
 
 function mountRunScreen(meta) {
@@ -775,16 +827,20 @@ function mountRunScreen(meta) {
       <div class="inner"><div class="count" id="r-count">0:00</div><div class="next" id="r-next"></div></div>
     </div>
     <div class="timeline-wrap"><div class="timeline">${run.segs.map(s => `<div class="${s.type}" style="flex:${s.dur}"></div>`).join('')}</div><div class="shade" id="r-shade"></div></div>
-    <div class="run-stats">
+    <div class="run-stats ${run.gps ? 'three' : ''}">
       <div><div class="k">Elapsed</div><div class="v" id="r-el">0:00</div></div>
+      ${run.gps ? '<div><div class="k">Miles</div><div class="v" id="r-dist">0.00</div></div>' : ''}
       <div><div class="k">Remaining</div><div class="v" id="r-rem">0:00</div></div>
     </div>
+    ${run.gps ? '<div class="run-gps" id="r-gps">Finding GPS…</div>' : ''}
     <div class="run-controls">
       <button class="side" data-act="run-end" aria-label="End run">${I.stop}</button>
       <button class="main" data-act="run-toggle" id="r-toggle" aria-label="Pause">${I.pause}</button>
       <button class="side" data-act="pocket" aria-label="Pocket lock">${I.lock}</button>
     </div>
-    <div class="run-hint">${store.get().settings.audioMode === 'locked' ? 'You can lock your iPhone — cues keep playing.' : 'Keep the screen on. Tap the lock for pocket mode.'}</div>
+    <div class="run-hint">${store.get().settings.audioMode === 'locked'
+      ? `You can lock your iPhone — cues keep playing.${run.gps ? ' GPS pauses while it’s locked.' : ''}`
+      : 'Keep the screen on. Tap the lock for pocket mode.'}</div>
     <div class="start-overlay" hidden><button class="btn" style="width:auto;padding:0 28px" data-act="run-resume">${I.play.replace(/34/g, '22')} Tap to start</button></div>
   </div>`;
   document.body.style.overflow = 'hidden';
@@ -818,6 +874,14 @@ function tick() {
   $('#r-rem').textContent = fmt(run.end - t);
   $('#r-shade').style.width = `${(t / run.end) * 100}%`;
   const paused = player.paused && !run.finished;
+  if (run.gps) {
+    run.gps.setPaused(paused);
+    if (Date.now() - (run.gpsUi || 0) > 1000) { // pace text doesn't need 60 fps
+      run.gpsUi = Date.now();
+      $('#r-dist').textContent = run.gps.distM || run.gps.status === 'ok' || run.gps.status === 'searching' ? miText(run.gps.distM) : '—';
+      $('#r-gps').textContent = gpsLine(run.gps);
+    }
+  }
   const tg = $('#r-toggle');
   if (tg.dataset.p !== String(paused)) { tg.innerHTML = paused ? I.play : I.pause; tg.dataset.p = String(paused); tg.setAttribute('aria-label', paused ? 'Resume' : 'Pause'); }
 
@@ -885,6 +949,8 @@ function finishRun(reachedEnd) {
   const runs = r.segs.filter(s => s.type === 'run');
   const mainDone = runs.length ? doneSec >= runs[runs.length - 1].end - 3 : doneSec >= r.end - 3;
   const result = { feel: null, notes: '', completed: mainDone || doneSec >= r.end * 0.75 };
+  r.gps?.stop();
+  const gps = r.gps?.summary() || null; // { distM, gpsSec, track } or null
 
   $('#pocket')?.remove();
   $('#run-root').innerHTML = '';
@@ -901,6 +967,7 @@ function finishRun(reachedEnd) {
         <div class="big mt">${fmt(doneSec)}</div>
         <div class="muted">${esc(describe(r.wk))}${r.kind !== 'custom' ? ` · ${esc(r.label)}` : ''}</div>
       </div>
+      ${gps ? gpsBlock({ ...gps, doneSec }) : ''}
       <div class="section-header">How did it feel?</div>
       <div class="segmented" style="background:var(--card)">${FEELS.map(f => `<button data-act="feel" data-v="${f.id}" class="${result.feel === f.id ? 'on' : ''}">${f.label}</button>`).join('')}</div>
       ${r.session ? `<div class="group mt"><div class="row"><div class="grow">Count session as done</div>${toggle('completed', result.completed, 'data-result')}</div></div>
@@ -908,12 +975,13 @@ function finishRun(reachedEnd) {
       <div class="section-header">Notes</div>
       <div class="group"><label class="row note-row"><textarea data-result="notes" rows="3" enterkeyhint="done" placeholder="Optional — e.g. calves tight, felt strong on the last run">${esc(result.notes)}</textarea></label></div>`,
     foot: () => `<button class="btn" data-act="save-run">Save</button><button class="btn plain" data-act="discard-run">Don’t save</button>`,
-    result, r, doneSec,
+    afterUpdate: () => keepRoute(gps?.track),
+    result, r, doneSec, gps,
   });
 }
 
 function saveRun(discard) {
-  const { result, r, doneSec } = sheet;
+  const { result, r, doneSec, gps } = sheet;
   closeSheet();
   if (discard) { render(); return; }
   store.save(st => {
@@ -929,6 +997,7 @@ function saveRun(discard) {
       completed: r.session ? result.completed : doneSec >= r.end - 3,
       feel: result.feel,
       notes: result.notes.trim(),
+      ...(gps || {}), // distM, gpsSec, track
     });
     st.lastWorkout = r.wk;
   });
