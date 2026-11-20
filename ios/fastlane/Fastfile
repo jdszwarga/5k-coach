@@ -1,0 +1,60 @@
+# Runs on GitHub Actions' macOS machines (see .github/workflows/ios.yml), from the ios/ folder.
+# Signing: fastlane match keeps the Apple Distribution certificate and App Store profiles,
+# encrypted, in a private git repo (MATCH_GIT_URL), so every fresh build machine can sign.
+default_platform(:ios)
+
+APP_ID = "com.jdszwarga.fivekcoach"
+WATCH_ID = "com.jdszwarga.fivekcoach.watchkitapp"
+PROJECT = "FiveKCoach.xcodeproj"
+TARGETS = { "FiveKCoach" => APP_ID, "FiveKCoachWatch" => WATCH_ID }
+
+platform :ios do
+  desc "Build, sign and upload to TestFlight"
+  lane :beta do
+    setup_ci # temporary keychain for this run
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_content: ENV.fetch("ASC_KEY_P8_BASE64"),
+      is_key_content_base64: true
+    )
+
+    # MATCH_READONLY=false only on the very first run (creates the certificate and profiles).
+    match(
+      type: "appstore",
+      app_identifier: TARGETS.values,
+      api_key: api_key,
+      team_id: ENV.fetch("TEAM_ID"),
+      readonly: ENV["MATCH_READONLY"] != "false"
+    )
+    profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
+
+    TARGETS.each do |target, id|
+      update_code_signing_settings(
+        path: PROJECT,
+        targets: [target],
+        use_automatic_signing: false,
+        team_id: ENV.fetch("TEAM_ID"),
+        code_sign_identity: "Apple Distribution",
+        profile_name: profiles.fetch(id),
+        bundle_identifier: id
+      )
+    end
+
+    build = latest_testflight_build_number(api_key: api_key, app_identifier: APP_ID, initial_build_number: 0) + 1
+
+    build_app(
+      project: PROJECT,
+      scheme: "FiveKCoach",
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: { provisioningProfiles: profiles },
+      xcargs: "CURRENT_PROJECT_VERSION=#{build}",
+      output_directory: "build"
+    )
+
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+    UI.success("Uploaded build #{build} to TestFlight")
+  end
+end

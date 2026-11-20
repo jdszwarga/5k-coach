@@ -2,3 +2,14 @@ node_modules/
 .DS_Store
 Thumbs.db
 .claude/settings.local.json
+
+# Native app: generated on the build Mac
+ios/*.xcodeproj/
+ios/App/Info.plist
+ios/Watch/Info.plist
+ios/build/
+ios/fastlane/report.xml
+ios/fastlane/README.md
+ios/.bundle/
+ios/vendor/
+*.p8

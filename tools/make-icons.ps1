@@ -1,10 +1,13 @@
-# Draws the app icons into /icons. Run: powershell -ExecutionPolicy Bypass -File tools\make-icons.ps1
+# Draws the app icons into /icons, plus the 1024px native app icons (iPhone + Watch asset catalogs).
+# Run: powershell -ExecutionPolicy Bypass -File tools\make-icons.ps1
 Add-Type -AssemblyName System.Drawing
 $out = Join-Path $PSScriptRoot '..\icons'
 New-Item -ItemType Directory -Force $out | Out-Null
 
-function Draw-Icon([int]$size, [string]$name, [double]$inset) {
-  $bmp = New-Object System.Drawing.Bitmap $size, $size
+# $opaque: 24-bit, no alpha channel — App Store Connect rejects app icons that have one.
+function Draw-Icon([int]$size, [string]$name, [double]$inset, [switch]$opaque) {
+  $bmp = if ($opaque) { New-Object System.Drawing.Bitmap $size, $size, ([System.Drawing.Imaging.PixelFormat]::Format24bppRgb) }
+         else { New-Object System.Drawing.Bitmap $size, $size }
   $g = [System.Drawing.Graphics]::FromImage($bmp)
   $g.SmoothingMode = 'AntiAlias'
   $g.TextRenderingHint = 'AntiAliasGridFit'
@@ -40,3 +43,5 @@ Draw-Icon 180 'apple-touch-icon.png' 0
 Draw-Icon 192 'icon-192.png' 0
 Draw-Icon 512 'icon-512.png' 0
 Draw-Icon 512 'icon-maskable-512.png' 0.06
+Draw-Icon 1024 '..\ios\App\Assets.xcassets\AppIcon.appiconset\icon-1024.png' 0 -opaque
+Draw-Icon 1024 '..\ios\Watch\Assets.xcassets\AppIcon.appiconset\icon-1024.png' 0 -opaque

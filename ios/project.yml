@@ -1,0 +1,62 @@
+# XcodeGen spec — the Xcode project is generated from this on the build Mac (`xcodegen generate`),
+# never edited by hand. iPhone app + single-target Watch app (embedded automatically into the
+# iPhone app's Watch/ folder because it's a watchOS app target dependency).
+name: FiveKCoach
+options:
+  bundleIdPrefix: com.jdszwarga
+  deploymentTarget:
+    iOS: "17.0"
+    watchOS: "10.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "2.0"
+    CURRENT_PROJECT_VERSION: "1"   # CI sets the real build number
+    SWIFT_VERSION: "5.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  FiveKCoach:
+    type: application
+    platform: iOS
+    sources: [App]
+    info:
+      path: App/Info.plist   # generated
+      properties:
+        CFBundleDisplayName: 5K Coach
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false   # HTTPS only: no export-compliance question per build
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jdszwarga.fivekcoach
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: FiveKCoachWatch
+  FiveKCoachWatch:
+    type: application
+    platform: watchOS
+    sources: [Watch]
+    info:
+      path: Watch/Info.plist   # generated
+      properties:
+        CFBundleDisplayName: 5K Coach
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)   # must match the iPhone app's
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.jdszwarga.fivekcoach
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jdszwarga.fivekcoach.watchkitapp
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SKIP_INSTALL: YES   # archived inside the iPhone app, not on its own
+schemes:
+  FiveKCoach:
+    build:
+      targets:
+        FiveKCoach: all
+    archive:
+      config: Release
