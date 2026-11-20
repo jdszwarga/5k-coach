@@ -141,10 +141,14 @@ const steps = []; // { dt (s), fix: {...} | null, pause?: true|false, note }
 let north = 0, east = 0;
 let heading = 0; // radians
 const fix = (o = {}) => ({ ...at(north, east), accuracy: 8, ...o });
+// Speed wobbles a little so no two points are exactly as far from a chord: Douglas-Peucker
+// would otherwise break those ties on last-bit float differences between JS and Swift.
+let stepN = 0;
 const move = (secs, speed, turn = 0, acc = 8) => {
   for (let i = 0; i < secs; i++) {
     heading += turn;
-    north += Math.cos(heading) * speed; east += Math.sin(heading) * speed;
+    const v = speed * (1 + 0.08 * Math.sin(++stepN * 1.7));
+    north += Math.cos(heading) * v; east += Math.sin(heading) * v;
     steps.push({ dt: 1, fix: fix({ accuracy: acc }) });
   }
 };
