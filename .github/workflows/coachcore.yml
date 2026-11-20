@@ -1,0 +1,53 @@
+name: CoachCore
+
+# Unit tests for the Swift logic package (ios/CoachCore), checked against fixtures
+# generated from the web app's JS by tools/make-fixtures.mjs.
+on:
+  push:
+    paths:
+      - 'ios/CoachCore/**'
+      - 'tools/make-fixtures.mjs'
+      - 'js/plan.js'
+      - 'js/audio.js'
+      - 'js/gps.js'
+      - 'js/store.js'
+      - 'audio/**'
+      - '.github/workflows/coachcore.yml'
+  pull_request:
+    paths:
+      - 'ios/CoachCore/**'
+      - 'tools/make-fixtures.mjs'
+      - 'js/plan.js'
+      - 'js/audio.js'
+      - 'js/gps.js'
+      - 'js/store.js'
+      - 'audio/**'
+      - '.github/workflows/coachcore.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: coachcore-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fixtures are up to date with the JS
+        run: |
+          node tools/make-fixtures.mjs
+          git diff --stat --exit-code -- ios/CoachCore/Tests/CoachCoreTests/Fixtures
+
+      - name: Swift version
+        run: swift --version
+
+      - name: swift test
+        working-directory: ios/CoachCore
+        run: swift test
