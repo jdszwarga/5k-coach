@@ -183,6 +183,7 @@ public func describe(_ wk: Workout) -> String {
 public struct Suggestion: Hashable, Sendable {
     public var label: String
     public var wk: Workout
+    public init(label: String, wk: Workout) { self.label = label; self.wk = wk }
 }
 
 /// Suggestions shown before a run.
