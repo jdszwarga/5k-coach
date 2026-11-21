@@ -11,6 +11,9 @@ TARGETS = { "FiveKCoach" => APP_ID, "FiveKCoachWatch" => WATCH_ID }
 platform :ios do
   desc "Build, sign and upload to TestFlight"
   lane :beta do
+    # Read this before setup_ci, which overwrites MATCH_READONLY with "true".
+    # MATCH_READONLY=false only on the very first run (creates the certificate and profiles).
+    create_signing = ENV["MATCH_READONLY"] == "false"
     setup_ci # temporary keychain for this run
 
     api_key = app_store_connect_api_key(
@@ -20,13 +23,12 @@ platform :ios do
       is_key_content_base64: true
     )
 
-    # MATCH_READONLY=false only on the very first run (creates the certificate and profiles).
     match(
       type: "appstore",
       app_identifier: TARGETS.values,
       api_key: api_key,
       team_id: ENV.fetch("TEAM_ID"),
-      readonly: ENV["MATCH_READONLY"] != "false"
+      readonly: !create_signing
     )
     profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
 
