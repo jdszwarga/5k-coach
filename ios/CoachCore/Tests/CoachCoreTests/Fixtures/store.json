@@ -1,0 +1,770 @@
+[
+ {
+  "name": "current",
+  "raw": "{\"settings\":{\"apiKey\":\"sk-ant-test\",\"model\":\"claude-opus-5-5\",\"audioMode\":\"locked\",\"beeps\":false,\"halfway\":true,\"autoReview\":false,\"gps\":true},\"pendingReview\":{\"message\":\"Eased week 2 a little.\",\"changes\":[{\"id\":\"w2s1\",\"runSec\":90,\"walkSec\":120,\"repeats\":6,\"note\":\"Easier\"}],\"at\":\"2026-10-05T08:00:00.000Z\"},\"profile\":{\"weeks\":3,\"perWeek\":3,\"level\":\"some\",\"paceMi\":12,\"startDate\":\"2026-10-01\",\"notes\":\"old knee\"},\"plan\":{\"createdAt\":\"2026-10-01T12:00:00.000Z\",\"source\":\"builtin\",\"summary\":\"3 weeks · 3 runs a week · finishing with a 37-minute 5K (3.1 miles).\",\"weeks\":[{\"week\":1,\"focus\":\"Build the habit\",\"sessions\":[{\"id\":\"w1s1\",\"title\":\"Run 1\",\"runSec\":120,\"walkSec\":120,\"repeats\":6,\"note\":\"Easy pace — you should be able to talk in short sentences.\"},{\"id\":\"w1s2\",\"title\":\"Run 2\",\"runSec\":120,\"walkSec\":105,\"repeats\":7,\"note\":\"Easy pace — you should be able to talk in short sentences.\"},{\"id\":\"w1s3\",\"title\":\"Run 3\",\"runSec\":150,\"walkSec\":120,\"repeats\":6,\"note\":\"Easy pace — you should be able to talk in short sentences.\"}]},{\"week\":2,\"focus\":\"Longer runs\",\"sessions\":[{\"id\":\"w2s1\",\"title\":\"Run 1\",\"runSec\":210,\"walkSec\":150,\"repeats\":5,\"note\":\"Easy pace — you should be able to talk in short sentences.\"},{\"id\":\"w2s2\",\"title\":\"Run 2\",\"runSec\":270,\"walkSec\":150,\"repeats\":5,\"note\":\"Easy pace — you should be able to talk in short sentences.\"},{\"id\":\"w2s3\",\"title\":\"Run 3\",\"runSec\":420,\"walkSec\":180,\"repeats\":3,\"note\":\"Easy pace — you should be able to talk in short sentences.\"}]},{\"week\":3,\"focus\":\"Race week\",\"sessions\":[{\"id\":\"w3s1\",\"title\":\"Run 1\",\"runSec\":660,\"walkSec\":180,\"repeats\":2,\"note\":\"Easy pace — you should be able to talk in short sentences.\"},{\"id\":\"w3s2\",\"title\":\"Run 2\",\"runSec\":900,\"walkSec\":180,\"repeats\":1,\"note\":\"Non-stop run. Keep it slow enough to talk.\"},{\"id\":\"w3s3\",\"title\":\"5K run\",\"runSec\":2220,\"walkSec\":180,\"repeats\":1,\"note\":\"Goal day: run the whole 5K (3.1 miles) at an easy, steady pace.\"}]}]},\"history\":[{\"id\":\"id-1\",\"date\":\"2026-10-02T07:00:00.000Z\",\"sessionId\":\"w1s1\",\"sessionLabel\":\"Week 1 · Run 1\",\"kind\":\"plan\",\"workout\":{\"runSec\":120,\"walkSec\":120,\"repeats\":6},\"totalSec\":1560,\"doneSec\":1560,\"completed\":true,\"feel\":\"easy\",\"notes\":\"\"},{\"id\":\"id-2\",\"date\":\"2026-10-03T07:00:00.000Z\",\"sessionId\":\"w1s2\",\"sessionLabel\":\"Week 1 · Run 2\",\"kind\":\"plan\",\"workout\":{\"runSec\":120,\"walkSec\":105,\"repeats\":7},\"totalSec\":1680,\"doneSec\":300,\"completed\":false,\"feel\":\"hard\",\"notes\":\"calves\"},{\"id\":\"id-3\",\"date\":\"2026-10-04T07:00:00.000Z\",\"sessionId\":null,\"sessionLabel\":null,\"kind\":\"custom\",\"workout\":{\"runSec\":600,\"walkSec\":0,\"repeats\":1},\"totalSec\":600,\"doneSec\":600,\"completed\":true,\"feel\":null,\"notes\":\"\"},{\"id\":\"id-4\",\"date\":\"2026-10-05T07:00:00.000Z\",\"sessionId\":\"w1s2\",\"sessionLabel\":\"Week 1 · Run 2\",\"kind\":\"plan\",\"workout\":{\"runSec\":120,\"walkSec\":105,\"repeats\":7},\"totalSec\":1680,\"doneSec\":1680,\"completed\":true,\"feel\":null,\"notes\":\"Checked off without the timer\",\"manual\":true},{\"id\":\"id-5\",\"date\":\"2026-10-06T07:00:00.000Z\",\"sessionId\":\"w1s3\",\"sessionLabel\":\"Week 1 · Run 3\",\"kind\":\"plan\",\"workout\":{\"runSec\":150,\"walkSec\":120,\"repeats\":6},\"totalSec\":1740,\"doneSec\":1740,\"completed\":true,\"feel\":\"right\",\"notes\":\"\",\"distM\":1426,\"gpsSec\":533,\"track\":{\"v\":1,\"pts\":[[41.88123,-87.62345,4],[41.88165,-87.62336,41],[41.88228,-87.62293,81],[41.8827,-87.62282,97],[41.88297,-87.62285,107],[41.88323,-87.62295,117],[41.88368,-87.62333,137],[41.88393,-87.62379,153],[41.88408,-87.62441,171],[41.88407,-87.62492,185],[41.88382,-87.62641,228],[41.88386,-87.6267,236],[41.88397,-87.62696,244],[41.88512,-87.62698,290],[41.88527,-87.62727,300],[41.88535,-87.6276,310],[41.88535,-87.62795,320],[41.88527,-87.62828,330],[41.88544,-87.6288,331],[41.88533,-87.62928,345],[41.8853,-87.62986,361],[41.88535,-87.63036,375],[41.88549,-87.63083,389],[41.89366,-87.63086,393],[41.89386,-87.63123,408],[41.89413,-87.6315,423],[41.8944,-87.63164,436],[41.89476,-87.63167,452],[41.89504,-87.63158,465],[41.89526,-87.63144,476],[41.89599,-87.63063,512],[41.89541,-87.63129,542]],\"gap\":[13],\"brk\":[18,23]}},{\"id\":\"id-6\",\"date\":\"2026-10-07T07:00:00.000Z\",\"sessionId\":null,\"sessionLabel\":\"Bonus\",\"kind\":\"bonus\",\"workout\":{\"runSec\":150,\"walkSec\":120,\"repeats\":6},\"totalSec\":1740,\"doneSec\":1740,\"completed\":true,\"feel\":null,\"notes\":\"\"}],\"lastWorkout\":{\"runSec\":150,\"walkSec\":120,\"repeats\":6}}",
+  "exported": {
+   "settings": {
+    "apiKey": "(removed)",
+    "model": "claude-opus-5-5",
+    "audioMode": "locked",
+    "beeps": false,
+    "halfway": true,
+    "autoReview": false,
+    "gps": true
+   },
+   "pendingReview": {
+    "message": "Eased week 2 a little.",
+    "changes": [
+     {
+      "id": "w2s1",
+      "runSec": 90,
+      "walkSec": 120,
+      "repeats": 6,
+      "note": "Easier"
+     }
+    ],
+    "at": "2026-10-05T08:00:00.000Z"
+   },
+   "profile": {
+    "weeks": 3,
+    "perWeek": 3,
+    "level": "some",
+    "paceMi": 12,
+    "startDate": "2026-10-01",
+    "notes": "old knee"
+   },
+   "plan": {
+    "createdAt": "2026-10-01T12:00:00.000Z",
+    "source": "builtin",
+    "summary": "3 weeks · 3 runs a week · finishing with a 37-minute 5K (3.1 miles).",
+    "weeks": [
+     {
+      "week": 1,
+      "focus": "Build the habit",
+      "sessions": [
+       {
+        "id": "w1s1",
+        "title": "Run 1",
+        "runSec": 120,
+        "walkSec": 120,
+        "repeats": 6,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       },
+       {
+        "id": "w1s2",
+        "title": "Run 2",
+        "runSec": 120,
+        "walkSec": 105,
+        "repeats": 7,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       },
+       {
+        "id": "w1s3",
+        "title": "Run 3",
+        "runSec": 150,
+        "walkSec": 120,
+        "repeats": 6,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       }
+      ]
+     },
+     {
+      "week": 2,
+      "focus": "Longer runs",
+      "sessions": [
+       {
+        "id": "w2s1",
+        "title": "Run 1",
+        "runSec": 210,
+        "walkSec": 150,
+        "repeats": 5,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       },
+       {
+        "id": "w2s2",
+        "title": "Run 2",
+        "runSec": 270,
+        "walkSec": 150,
+        "repeats": 5,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       },
+       {
+        "id": "w2s3",
+        "title": "Run 3",
+        "runSec": 420,
+        "walkSec": 180,
+        "repeats": 3,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       }
+      ]
+     },
+     {
+      "week": 3,
+      "focus": "Race week",
+      "sessions": [
+       {
+        "id": "w3s1",
+        "title": "Run 1",
+        "runSec": 660,
+        "walkSec": 180,
+        "repeats": 2,
+        "note": "Easy pace — you should be able to talk in short sentences."
+       },
+       {
+        "id": "w3s2",
+        "title": "Run 2",
+        "runSec": 900,
+        "walkSec": 180,
+        "repeats": 1,
+        "note": "Non-stop run. Keep it slow enough to talk."
+       },
+       {
+        "id": "w3s3",
+        "title": "5K run",
+        "runSec": 2220,
+        "walkSec": 180,
+        "repeats": 1,
+        "note": "Goal day: run the whole 5K (3.1 miles) at an easy, steady pace."
+       }
+      ]
+     }
+    ]
+   },
+   "history": [
+    {
+     "id": "id-1",
+     "date": "2026-10-02T07:00:00.000Z",
+     "sessionId": "w1s1",
+     "sessionLabel": "Week 1 · Run 1",
+     "kind": "plan",
+     "workout": {
+      "runSec": 120,
+      "walkSec": 120,
+      "repeats": 6
+     },
+     "totalSec": 1560,
+     "doneSec": 1560,
+     "completed": true,
+     "feel": "easy",
+     "notes": ""
+    },
+    {
+     "id": "id-2",
+     "date": "2026-10-03T07:00:00.000Z",
+     "sessionId": "w1s2",
+     "sessionLabel": "Week 1 · Run 2",
+     "kind": "plan",
+     "workout": {
+      "runSec": 120,
+      "walkSec": 105,
+      "repeats": 7
+     },
+     "totalSec": 1680,
+     "doneSec": 300,
+     "completed": false,
+     "feel": "hard",
+     "notes": "calves"
+    },
+    {
+     "id": "id-3",
+     "date": "2026-10-04T07:00:00.000Z",
+     "sessionId": null,
+     "sessionLabel": null,
+     "kind": "custom",
+     "workout": {
+      "runSec": 600,
+      "walkSec": 0,
+      "repeats": 1
+     },
+     "totalSec": 600,
+     "doneSec": 600,
+     "completed": true,
+     "feel": null,
+     "notes": ""
+    },
+    {
+     "id": "id-4",
+     "date": "2026-10-05T07:00:00.000Z",
+     "sessionId": "w1s2",
+     "sessionLabel": "Week 1 · Run 2",
+     "kind": "plan",
+     "workout": {
+      "runSec": 120,
+      "walkSec": 105,
+      "repeats": 7
+     },
+     "totalSec": 1680,
+     "doneSec": 1680,
+     "completed": true,
+     "feel": null,
+     "notes": "Checked off without the timer",
+     "manual": true
+    },
+    {
+     "id": "id-5",
+     "date": "2026-10-06T07:00:00.000Z",
+     "sessionId": "w1s3",
+     "sessionLabel": "Week 1 · Run 3",
+     "kind": "plan",
+     "workout": {
+      "runSec": 150,
+      "walkSec": 120,
+      "repeats": 6
+     },
+     "totalSec": 1740,
+     "doneSec": 1740,
+     "completed": true,
+     "feel": "right",
+     "notes": "",
+     "distM": 1426,
+     "gpsSec": 533,
+     "track": {
+      "v": 1,
+      "pts": [
+       [
+        41.88123,
+        -87.62345,
+        4
+       ],
+       [
+        41.88165,
+        -87.62336,
+        41
+       ],
+       [
+        41.88228,
+        -87.62293,
+        81
+       ],
+       [
+        41.8827,
+        -87.62282,
+        97
+       ],
+       [
+        41.88297,
+        -87.62285,
+        107
+       ],
+       [
+        41.88323,
+        -87.62295,
+        117
+       ],
+       [
+        41.88368,
+        -87.62333,
+        137
+       ],
+       [
+        41.88393,
+        -87.62379,
+        153
+       ],
+       [
+        41.88408,
+        -87.62441,
+        171
+       ],
+       [
+        41.88407,
+        -87.62492,
+        185
+       ],
+       [
+        41.88382,
+        -87.62641,
+        228
+       ],
+       [
+        41.88386,
+        -87.6267,
+        236
+       ],
+       [
+        41.88397,
+        -87.62696,
+        244
+       ],
+       [
+        41.88512,
+        -87.62698,
+        290
+       ],
+       [
+        41.88527,
+        -87.62727,
+        300
+       ],
+       [
+        41.88535,
+        -87.6276,
+        310
+       ],
+       [
+        41.88535,
+        -87.62795,
+        320
+       ],
+       [
+        41.88527,
+        -87.62828,
+        330
+       ],
+       [
+        41.88544,
+        -87.6288,
+        331
+       ],
+       [
+        41.88533,
+        -87.62928,
+        345
+       ],
+       [
+        41.8853,
+        -87.62986,
+        361
+       ],
+       [
+        41.88535,
+        -87.63036,
+        375
+       ],
+       [
+        41.88549,
+        -87.63083,
+        389
+       ],
+       [
+        41.89366,
+        -87.63086,
+        393
+       ],
+       [
+        41.89386,
+        -87.63123,
+        408
+       ],
+       [
+        41.89413,
+        -87.6315,
+        423
+       ],
+       [
+        41.8944,
+        -87.63164,
+        436
+       ],
+       [
+        41.89476,
+        -87.63167,
+        452
+       ],
+       [
+        41.89504,
+        -87.63158,
+        465
+       ],
+       [
+        41.89526,
+        -87.63144,
+        476
+       ],
+       [
+        41.89599,
+        -87.63063,
+        512
+       ],
+       [
+        41.89541,
+        -87.63129,
+        542
+       ]
+      ],
+      "gap": [
+       13
+      ],
+      "brk": [
+       18,
+       23
+      ]
+     }
+    },
+    {
+     "id": "id-6",
+     "date": "2026-10-07T07:00:00.000Z",
+     "sessionId": null,
+     "sessionLabel": "Bonus",
+     "kind": "bonus",
+     "workout": {
+      "runSec": 150,
+      "walkSec": 120,
+      "repeats": 6
+     },
+     "totalSec": 1740,
+     "doneSec": 1740,
+     "completed": true,
+     "feel": null,
+     "notes": ""
+    }
+   ],
+   "lastWorkout": {
+    "runSec": 150,
+    "walkSec": 120,
+    "repeats": 6
+   }
+  },
+  "allSessions": [
+   {
+    "id": "w1s1",
+    "title": "Run 1",
+    "runSec": 120,
+    "walkSec": 120,
+    "repeats": 6,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 1
+   },
+   {
+    "id": "w1s2",
+    "title": "Run 2",
+    "runSec": 120,
+    "walkSec": 105,
+    "repeats": 7,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 1
+   },
+   {
+    "id": "w1s3",
+    "title": "Run 3",
+    "runSec": 150,
+    "walkSec": 120,
+    "repeats": 6,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 1
+   },
+   {
+    "id": "w2s1",
+    "title": "Run 1",
+    "runSec": 210,
+    "walkSec": 150,
+    "repeats": 5,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 2
+   },
+   {
+    "id": "w2s2",
+    "title": "Run 2",
+    "runSec": 270,
+    "walkSec": 150,
+    "repeats": 5,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 2
+   },
+   {
+    "id": "w2s3",
+    "title": "Run 3",
+    "runSec": 420,
+    "walkSec": 180,
+    "repeats": 3,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 2
+   },
+   {
+    "id": "w3s1",
+    "title": "Run 1",
+    "runSec": 660,
+    "walkSec": 180,
+    "repeats": 2,
+    "note": "Easy pace — you should be able to talk in short sentences.",
+    "week": 3
+   },
+   {
+    "id": "w3s2",
+    "title": "Run 2",
+    "runSec": 900,
+    "walkSec": 180,
+    "repeats": 1,
+    "note": "Non-stop run. Keep it slow enough to talk.",
+    "week": 3
+   },
+   {
+    "id": "w3s3",
+    "title": "5K run",
+    "runSec": 2220,
+    "walkSec": 180,
+    "repeats": 1,
+    "note": "Goal day: run the whole 5K (3.1 miles) at an easy, steady pace.",
+    "week": 3
+   }
+  ],
+  "isDone": {
+   "w1s1": true,
+   "w1s2": true,
+   "w1s3": true,
+   "w2s1": false,
+   "w2s2": false,
+   "w2s3": false,
+   "w3s1": false,
+   "w3s2": false,
+   "w3s3": false
+  },
+  "nextSession": {
+   "id": "w2s1",
+   "title": "Run 1",
+   "runSec": 210,
+   "walkSec": 150,
+   "repeats": 5,
+   "note": "Easy pace — you should be able to talk in short sentences.",
+   "week": 2
+  },
+  "progress": {
+   "done": 3,
+   "total": 9
+  }
+ },
+ {
+  "name": "old",
+  "raw": "{\"settings\":{\"apiKey\":\"\",\"model\":\"claude-opus-4-1\",\"beeps\":true},\"profile\":{\"weeks\":2,\"days\":[1,3,5],\"pace\":7,\"level\":\"new\",\"startDate\":\"2025-05-01\",\"notes\":\"\"},\"plan\":{\"createdAt\":\"2025-05-01T10:00:00.000Z\",\"source\":\"claude\",\"summary\":\"Old plan\",\"weeks\":[{\"week\":1,\"focus\":\"Start\",\"sessions\":[{\"id\":\"w1s1\",\"title\":\"Run 1\",\"runSec\":60,\"walkSec\":90,\"repeats\":6,\"warmupSec\":300,\"note\":\"\"},{\"id\":\"w1s2\",\"title\":\"Run 2\",\"runSec\":60,\"repeats\":7},{\"id\":\"w1s3\",\"title\":\"Run 3\",\"runSec\":90,\"walkSec\":90,\"repeats\":6,\"note\":\"x\"}]},{\"week\":2,\"focus\":\"More\",\"sessions\":[{\"id\":\"w2s1\",\"title\":\"Run 1\",\"runSec\":120,\"walkSec\":90,\"repeats\":5,\"note\":\"\"},{\"id\":\"w2s2\",\"title\":\"Run 2\",\"runSec\":1200,\"walkSec\":0,\"repeats\":1,\"note\":\"\"}]}]},\"history\":[{\"id\":\"1\",\"date\":\"2025-05-02T07:00:00.000Z\",\"sessionId\":\"w1s1\",\"workout\":{\"runSec\":60,\"walkSec\":90,\"repeats\":6,\"warmupSec\":300},\"totalSec\":1230,\"doneSec\":1230,\"completed\":true,\"feel\":\"easy\"},{\"id\":\"2\",\"date\":\"2025-05-04T07:00:00.000Z\",\"sessionId\":\"w1s2\",\"workout\":{\"runSec\":60,\"repeats\":7},\"totalSec\":420,\"doneSec\":400,\"completed\":true},{\"id\":\"3\",\"date\":\"2025-05-06T07:00:00.000Z\",\"sessionId\":null,\"workout\":{\"runSec\":600},\"totalSec\":600,\"doneSec\":200,\"completed\":false,\"notes\":\"stitch\"}]}",
+  "exported": {
+   "settings": {
+    "apiKey": "",
+    "model": "claude-opus-4-1",
+    "audioMode": "mix",
+    "beeps": true,
+    "halfway": true,
+    "autoReview": true,
+    "gps": true
+   },
+   "pendingReview": null,
+   "profile": {
+    "weeks": 2,
+    "level": "new",
+    "startDate": "2025-05-01",
+    "notes": "",
+    "perWeek": 3,
+    "paceMi": 11.25
+   },
+   "plan": {
+    "createdAt": "2025-05-01T10:00:00.000Z",
+    "source": "claude",
+    "summary": "Old plan",
+    "weeks": [
+     {
+      "week": 1,
+      "focus": "Start",
+      "sessions": [
+       {
+        "id": "w1s1",
+        "title": "Run 1",
+        "runSec": 60,
+        "walkSec": 90,
+        "repeats": 6,
+        "warmupSec": 300,
+        "note": ""
+       },
+       {
+        "id": "w1s2",
+        "title": "Run 2",
+        "runSec": 60,
+        "repeats": 7
+       },
+       {
+        "id": "w1s3",
+        "title": "Run 3",
+        "runSec": 90,
+        "walkSec": 90,
+        "repeats": 6,
+        "note": "x"
+       }
+      ]
+     },
+     {
+      "week": 2,
+      "focus": "More",
+      "sessions": [
+       {
+        "id": "w2s1",
+        "title": "Run 1",
+        "runSec": 120,
+        "walkSec": 90,
+        "repeats": 5,
+        "note": ""
+       },
+       {
+        "id": "w2s2",
+        "title": "Run 2",
+        "runSec": 1200,
+        "walkSec": 0,
+        "repeats": 1,
+        "note": ""
+       }
+      ]
+     }
+    ]
+   },
+   "history": [
+    {
+     "id": "1",
+     "date": "2025-05-02T07:00:00.000Z",
+     "sessionId": "w1s1",
+     "workout": {
+      "runSec": 60,
+      "walkSec": 90,
+      "repeats": 6,
+      "warmupSec": 300
+     },
+     "totalSec": 1230,
+     "doneSec": 1230,
+     "completed": true,
+     "feel": "easy"
+    },
+    {
+     "id": "2",
+     "date": "2025-05-04T07:00:00.000Z",
+     "sessionId": "w1s2",
+     "workout": {
+      "runSec": 60,
+      "repeats": 7
+     },
+     "totalSec": 420,
+     "doneSec": 400,
+     "completed": true
+    },
+    {
+     "id": "3",
+     "date": "2025-05-06T07:00:00.000Z",
+     "sessionId": null,
+     "workout": {
+      "runSec": 600
+     },
+     "totalSec": 600,
+     "doneSec": 200,
+     "completed": false,
+     "notes": "stitch"
+    }
+   ],
+   "lastWorkout": null
+  },
+  "allSessions": [
+   {
+    "id": "w1s1",
+    "title": "Run 1",
+    "runSec": 60,
+    "walkSec": 90,
+    "repeats": 6,
+    "warmupSec": 300,
+    "note": "",
+    "week": 1
+   },
+   {
+    "id": "w1s2",
+    "title": "Run 2",
+    "runSec": 60,
+    "repeats": 7,
+    "week": 1
+   },
+   {
+    "id": "w1s3",
+    "title": "Run 3",
+    "runSec": 90,
+    "walkSec": 90,
+    "repeats": 6,
+    "note": "x",
+    "week": 1
+   },
+   {
+    "id": "w2s1",
+    "title": "Run 1",
+    "runSec": 120,
+    "walkSec": 90,
+    "repeats": 5,
+    "note": "",
+    "week": 2
+   },
+   {
+    "id": "w2s2",
+    "title": "Run 2",
+    "runSec": 1200,
+    "walkSec": 0,
+    "repeats": 1,
+    "note": "",
+    "week": 2
+   }
+  ],
+  "isDone": {
+   "w1s1": true,
+   "w1s2": true,
+   "w1s3": false,
+   "w2s1": false,
+   "w2s2": false
+  },
+  "nextSession": {
+   "id": "w1s3",
+   "title": "Run 3",
+   "runSec": 90,
+   "walkSec": 90,
+   "repeats": 6,
+   "note": "x",
+   "week": 1
+  },
+  "progress": {
+   "done": 2,
+   "total": 5
+  }
+ },
+ {
+  "name": "empty",
+  "raw": null,
+  "exported": {
+   "settings": {
+    "apiKey": "",
+    "model": "claude-opus-5-5",
+    "audioMode": "mix",
+    "beeps": true,
+    "halfway": true,
+    "autoReview": true,
+    "gps": true
+   },
+   "pendingReview": null,
+   "profile": null,
+   "plan": null,
+   "history": [],
+   "lastWorkout": null
+  },
+  "allSessions": [],
+  "isDone": {},
+  "nextSession": null,
+  "progress": {
+   "done": 0,
+   "total": 0
+  }
+ },
+ {
+  "name": "broken",
+  "raw": "{not json",
+  "exported": {
+   "settings": {
+    "apiKey": "",
+    "model": "claude-opus-5-5",
+    "audioMode": "mix",
+    "beeps": true,
+    "halfway": true,
+    "autoReview": true,
+    "gps": true
+   },
+   "pendingReview": null,
+   "profile": null,
+   "plan": null,
+   "history": [],
+   "lastWorkout": null
+  },
+  "allSessions": [],
+  "isDone": {},
+  "nextSession": null,
+  "progress": {
+   "done": 0,
+   "total": 0
+  }
+ }
+]

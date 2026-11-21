@@ -1,0 +1,4297 @@
+[
+ {
+  "wk": {
+   "runSec": 90,
+   "walkSec": 90,
+   "repeats": 8
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 87,
+    "kind": "beep"
+   },
+   {
+    "t": 88,
+    "kind": "beep"
+   },
+   {
+    "t": 89,
+    "kind": "beep"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 177,
+    "kind": "beep"
+   },
+   {
+    "t": 178,
+    "kind": "beep"
+   },
+   {
+    "t": 179,
+    "kind": "beep"
+   },
+   {
+    "t": 180,
+    "kind": "walk"
+   },
+   {
+    "t": 267,
+    "kind": "beep"
+   },
+   {
+    "t": 268,
+    "kind": "beep"
+   },
+   {
+    "t": 269,
+    "kind": "beep"
+   },
+   {
+    "t": 270,
+    "kind": "run"
+   },
+   {
+    "t": 357,
+    "kind": "beep"
+   },
+   {
+    "t": 358,
+    "kind": "beep"
+   },
+   {
+    "t": 359,
+    "kind": "beep"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 447,
+    "kind": "beep"
+   },
+   {
+    "t": 448,
+    "kind": "beep"
+   },
+   {
+    "t": 449,
+    "kind": "beep"
+   },
+   {
+    "t": 450,
+    "kind": "run"
+   },
+   {
+    "t": 537,
+    "kind": "beep"
+   },
+   {
+    "t": 538,
+    "kind": "beep"
+   },
+   {
+    "t": 539,
+    "kind": "beep"
+   },
+   {
+    "t": 540,
+    "kind": "walk"
+   },
+   {
+    "t": 627,
+    "kind": "beep"
+   },
+   {
+    "t": 628,
+    "kind": "beep"
+   },
+   {
+    "t": 629,
+    "kind": "beep"
+   },
+   {
+    "t": 630,
+    "kind": "run"
+   },
+   {
+    "t": 717,
+    "kind": "beep"
+   },
+   {
+    "t": 718,
+    "kind": "beep"
+   },
+   {
+    "t": 719,
+    "kind": "beep"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 765,
+    "kind": "halfway"
+   },
+   {
+    "t": 807,
+    "kind": "beep"
+   },
+   {
+    "t": 808,
+    "kind": "beep"
+   },
+   {
+    "t": 809,
+    "kind": "beep"
+   },
+   {
+    "t": 810,
+    "kind": "run"
+   },
+   {
+    "t": 897,
+    "kind": "beep"
+   },
+   {
+    "t": 898,
+    "kind": "beep"
+   },
+   {
+    "t": 899,
+    "kind": "beep"
+   },
+   {
+    "t": 900,
+    "kind": "walk"
+   },
+   {
+    "t": 987,
+    "kind": "beep"
+   },
+   {
+    "t": 988,
+    "kind": "beep"
+   },
+   {
+    "t": 989,
+    "kind": "beep"
+   },
+   {
+    "t": 990,
+    "kind": "run"
+   },
+   {
+    "t": 1077,
+    "kind": "beep"
+   },
+   {
+    "t": 1078,
+    "kind": "beep"
+   },
+   {
+    "t": 1079,
+    "kind": "beep"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1167,
+    "kind": "beep"
+   },
+   {
+    "t": 1168,
+    "kind": "beep"
+   },
+   {
+    "t": 1169,
+    "kind": "beep"
+   },
+   {
+    "t": 1170,
+    "kind": "run"
+   },
+   {
+    "t": 1257,
+    "kind": "beep"
+   },
+   {
+    "t": 1258,
+    "kind": "beep"
+   },
+   {
+    "t": 1259,
+    "kind": "beep"
+   },
+   {
+    "t": 1260,
+    "kind": "walk"
+   },
+   {
+    "t": 1347,
+    "kind": "beep"
+   },
+   {
+    "t": 1348,
+    "kind": "beep"
+   },
+   {
+    "t": 1349,
+    "kind": "beep"
+   },
+   {
+    "t": 1350,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1437,
+    "kind": "beep"
+   },
+   {
+    "t": 1438,
+    "kind": "beep"
+   },
+   {
+    "t": 1439,
+    "kind": "beep"
+   },
+   {
+    "t": 1440,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1530,
+    "kind": "done"
+   }
+  ],
+  "end": 1530
+ },
+ {
+  "wk": {
+   "runSec": 90,
+   "walkSec": 90,
+   "repeats": 8
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 180,
+    "kind": "walk"
+   },
+   {
+    "t": 270,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 450,
+    "kind": "run"
+   },
+   {
+    "t": 540,
+    "kind": "walk"
+   },
+   {
+    "t": 630,
+    "kind": "run"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 765,
+    "kind": "halfway"
+   },
+   {
+    "t": 810,
+    "kind": "run"
+   },
+   {
+    "t": 900,
+    "kind": "walk"
+   },
+   {
+    "t": 990,
+    "kind": "run"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1170,
+    "kind": "run"
+   },
+   {
+    "t": 1260,
+    "kind": "walk"
+   },
+   {
+    "t": 1350,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1440,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1530,
+    "kind": "done"
+   }
+  ],
+  "end": 1530
+ },
+ {
+  "wk": {
+   "runSec": 90,
+   "walkSec": 90,
+   "repeats": 8
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 87,
+    "kind": "beep"
+   },
+   {
+    "t": 88,
+    "kind": "beep"
+   },
+   {
+    "t": 89,
+    "kind": "beep"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 177,
+    "kind": "beep"
+   },
+   {
+    "t": 178,
+    "kind": "beep"
+   },
+   {
+    "t": 179,
+    "kind": "beep"
+   },
+   {
+    "t": 180,
+    "kind": "walk"
+   },
+   {
+    "t": 267,
+    "kind": "beep"
+   },
+   {
+    "t": 268,
+    "kind": "beep"
+   },
+   {
+    "t": 269,
+    "kind": "beep"
+   },
+   {
+    "t": 270,
+    "kind": "run"
+   },
+   {
+    "t": 357,
+    "kind": "beep"
+   },
+   {
+    "t": 358,
+    "kind": "beep"
+   },
+   {
+    "t": 359,
+    "kind": "beep"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 447,
+    "kind": "beep"
+   },
+   {
+    "t": 448,
+    "kind": "beep"
+   },
+   {
+    "t": 449,
+    "kind": "beep"
+   },
+   {
+    "t": 450,
+    "kind": "run"
+   },
+   {
+    "t": 537,
+    "kind": "beep"
+   },
+   {
+    "t": 538,
+    "kind": "beep"
+   },
+   {
+    "t": 539,
+    "kind": "beep"
+   },
+   {
+    "t": 540,
+    "kind": "walk"
+   },
+   {
+    "t": 627,
+    "kind": "beep"
+   },
+   {
+    "t": 628,
+    "kind": "beep"
+   },
+   {
+    "t": 629,
+    "kind": "beep"
+   },
+   {
+    "t": 630,
+    "kind": "run"
+   },
+   {
+    "t": 717,
+    "kind": "beep"
+   },
+   {
+    "t": 718,
+    "kind": "beep"
+   },
+   {
+    "t": 719,
+    "kind": "beep"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 807,
+    "kind": "beep"
+   },
+   {
+    "t": 808,
+    "kind": "beep"
+   },
+   {
+    "t": 809,
+    "kind": "beep"
+   },
+   {
+    "t": 810,
+    "kind": "run"
+   },
+   {
+    "t": 897,
+    "kind": "beep"
+   },
+   {
+    "t": 898,
+    "kind": "beep"
+   },
+   {
+    "t": 899,
+    "kind": "beep"
+   },
+   {
+    "t": 900,
+    "kind": "walk"
+   },
+   {
+    "t": 987,
+    "kind": "beep"
+   },
+   {
+    "t": 988,
+    "kind": "beep"
+   },
+   {
+    "t": 989,
+    "kind": "beep"
+   },
+   {
+    "t": 990,
+    "kind": "run"
+   },
+   {
+    "t": 1077,
+    "kind": "beep"
+   },
+   {
+    "t": 1078,
+    "kind": "beep"
+   },
+   {
+    "t": 1079,
+    "kind": "beep"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1167,
+    "kind": "beep"
+   },
+   {
+    "t": 1168,
+    "kind": "beep"
+   },
+   {
+    "t": 1169,
+    "kind": "beep"
+   },
+   {
+    "t": 1170,
+    "kind": "run"
+   },
+   {
+    "t": 1257,
+    "kind": "beep"
+   },
+   {
+    "t": 1258,
+    "kind": "beep"
+   },
+   {
+    "t": 1259,
+    "kind": "beep"
+   },
+   {
+    "t": 1260,
+    "kind": "walk"
+   },
+   {
+    "t": 1347,
+    "kind": "beep"
+   },
+   {
+    "t": 1348,
+    "kind": "beep"
+   },
+   {
+    "t": 1349,
+    "kind": "beep"
+   },
+   {
+    "t": 1350,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1437,
+    "kind": "beep"
+   },
+   {
+    "t": 1438,
+    "kind": "beep"
+   },
+   {
+    "t": 1439,
+    "kind": "beep"
+   },
+   {
+    "t": 1440,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1530,
+    "kind": "done"
+   }
+  ],
+  "end": 1530
+ },
+ {
+  "wk": {
+   "runSec": 90,
+   "walkSec": 90,
+   "repeats": 8
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 180,
+    "kind": "walk"
+   },
+   {
+    "t": 270,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 450,
+    "kind": "run"
+   },
+   {
+    "t": 540,
+    "kind": "walk"
+   },
+   {
+    "t": 630,
+    "kind": "run"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 810,
+    "kind": "run"
+   },
+   {
+    "t": 900,
+    "kind": "walk"
+   },
+   {
+    "t": 990,
+    "kind": "run"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1170,
+    "kind": "run"
+   },
+   {
+    "t": 1260,
+    "kind": "walk"
+   },
+   {
+    "t": 1350,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1440,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1530,
+    "kind": "done"
+   }
+  ],
+  "end": 1530
+ },
+ {
+  "wk": {
+   "runSec": 60,
+   "walkSec": 90,
+   "repeats": 6
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 87,
+    "kind": "beep"
+   },
+   {
+    "t": 88,
+    "kind": "beep"
+   },
+   {
+    "t": 89,
+    "kind": "beep"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 147,
+    "kind": "beep"
+   },
+   {
+    "t": 148,
+    "kind": "beep"
+   },
+   {
+    "t": 149,
+    "kind": "beep"
+   },
+   {
+    "t": 150,
+    "kind": "walk"
+   },
+   {
+    "t": 237,
+    "kind": "beep"
+   },
+   {
+    "t": 238,
+    "kind": "beep"
+   },
+   {
+    "t": 239,
+    "kind": "beep"
+   },
+   {
+    "t": 240,
+    "kind": "run"
+   },
+   {
+    "t": 297,
+    "kind": "beep"
+   },
+   {
+    "t": 298,
+    "kind": "beep"
+   },
+   {
+    "t": 299,
+    "kind": "beep"
+   },
+   {
+    "t": 300,
+    "kind": "walk"
+   },
+   {
+    "t": 387,
+    "kind": "beep"
+   },
+   {
+    "t": 388,
+    "kind": "beep"
+   },
+   {
+    "t": 389,
+    "kind": "beep"
+   },
+   {
+    "t": 390,
+    "kind": "run"
+   },
+   {
+    "t": 447,
+    "kind": "beep"
+   },
+   {
+    "t": 448,
+    "kind": "beep"
+   },
+   {
+    "t": 449,
+    "kind": "beep"
+   },
+   {
+    "t": 450,
+    "kind": "walk"
+   },
+   {
+    "t": 495,
+    "kind": "halfway"
+   },
+   {
+    "t": 537,
+    "kind": "beep"
+   },
+   {
+    "t": 538,
+    "kind": "beep"
+   },
+   {
+    "t": 539,
+    "kind": "beep"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 597,
+    "kind": "beep"
+   },
+   {
+    "t": 598,
+    "kind": "beep"
+   },
+   {
+    "t": 599,
+    "kind": "beep"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 687,
+    "kind": "beep"
+   },
+   {
+    "t": 688,
+    "kind": "beep"
+   },
+   {
+    "t": 689,
+    "kind": "beep"
+   },
+   {
+    "t": 690,
+    "kind": "run"
+   },
+   {
+    "t": 747,
+    "kind": "beep"
+   },
+   {
+    "t": 748,
+    "kind": "beep"
+   },
+   {
+    "t": 749,
+    "kind": "beep"
+   },
+   {
+    "t": 750,
+    "kind": "walk"
+   },
+   {
+    "t": 837,
+    "kind": "beep"
+   },
+   {
+    "t": 838,
+    "kind": "beep"
+   },
+   {
+    "t": 839,
+    "kind": "beep"
+   },
+   {
+    "t": 840,
+    "kind": "lastrun"
+   },
+   {
+    "t": 897,
+    "kind": "beep"
+   },
+   {
+    "t": 898,
+    "kind": "beep"
+   },
+   {
+    "t": 899,
+    "kind": "beep"
+   },
+   {
+    "t": 900,
+    "kind": "cooldown"
+   },
+   {
+    "t": 990,
+    "kind": "done"
+   }
+  ],
+  "end": 990
+ },
+ {
+  "wk": {
+   "runSec": 60,
+   "walkSec": 90,
+   "repeats": 6
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 150,
+    "kind": "walk"
+   },
+   {
+    "t": 240,
+    "kind": "run"
+   },
+   {
+    "t": 300,
+    "kind": "walk"
+   },
+   {
+    "t": 390,
+    "kind": "run"
+   },
+   {
+    "t": 450,
+    "kind": "walk"
+   },
+   {
+    "t": 495,
+    "kind": "halfway"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 690,
+    "kind": "run"
+   },
+   {
+    "t": 750,
+    "kind": "walk"
+   },
+   {
+    "t": 840,
+    "kind": "lastrun"
+   },
+   {
+    "t": 900,
+    "kind": "cooldown"
+   },
+   {
+    "t": 990,
+    "kind": "done"
+   }
+  ],
+  "end": 990
+ },
+ {
+  "wk": {
+   "runSec": 60,
+   "walkSec": 90,
+   "repeats": 6
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 87,
+    "kind": "beep"
+   },
+   {
+    "t": 88,
+    "kind": "beep"
+   },
+   {
+    "t": 89,
+    "kind": "beep"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 147,
+    "kind": "beep"
+   },
+   {
+    "t": 148,
+    "kind": "beep"
+   },
+   {
+    "t": 149,
+    "kind": "beep"
+   },
+   {
+    "t": 150,
+    "kind": "walk"
+   },
+   {
+    "t": 237,
+    "kind": "beep"
+   },
+   {
+    "t": 238,
+    "kind": "beep"
+   },
+   {
+    "t": 239,
+    "kind": "beep"
+   },
+   {
+    "t": 240,
+    "kind": "run"
+   },
+   {
+    "t": 297,
+    "kind": "beep"
+   },
+   {
+    "t": 298,
+    "kind": "beep"
+   },
+   {
+    "t": 299,
+    "kind": "beep"
+   },
+   {
+    "t": 300,
+    "kind": "walk"
+   },
+   {
+    "t": 387,
+    "kind": "beep"
+   },
+   {
+    "t": 388,
+    "kind": "beep"
+   },
+   {
+    "t": 389,
+    "kind": "beep"
+   },
+   {
+    "t": 390,
+    "kind": "run"
+   },
+   {
+    "t": 447,
+    "kind": "beep"
+   },
+   {
+    "t": 448,
+    "kind": "beep"
+   },
+   {
+    "t": 449,
+    "kind": "beep"
+   },
+   {
+    "t": 450,
+    "kind": "walk"
+   },
+   {
+    "t": 537,
+    "kind": "beep"
+   },
+   {
+    "t": 538,
+    "kind": "beep"
+   },
+   {
+    "t": 539,
+    "kind": "beep"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 597,
+    "kind": "beep"
+   },
+   {
+    "t": 598,
+    "kind": "beep"
+   },
+   {
+    "t": 599,
+    "kind": "beep"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 687,
+    "kind": "beep"
+   },
+   {
+    "t": 688,
+    "kind": "beep"
+   },
+   {
+    "t": 689,
+    "kind": "beep"
+   },
+   {
+    "t": 690,
+    "kind": "run"
+   },
+   {
+    "t": 747,
+    "kind": "beep"
+   },
+   {
+    "t": 748,
+    "kind": "beep"
+   },
+   {
+    "t": 749,
+    "kind": "beep"
+   },
+   {
+    "t": 750,
+    "kind": "walk"
+   },
+   {
+    "t": 837,
+    "kind": "beep"
+   },
+   {
+    "t": 838,
+    "kind": "beep"
+   },
+   {
+    "t": 839,
+    "kind": "beep"
+   },
+   {
+    "t": 840,
+    "kind": "lastrun"
+   },
+   {
+    "t": 897,
+    "kind": "beep"
+   },
+   {
+    "t": 898,
+    "kind": "beep"
+   },
+   {
+    "t": 899,
+    "kind": "beep"
+   },
+   {
+    "t": 900,
+    "kind": "cooldown"
+   },
+   {
+    "t": 990,
+    "kind": "done"
+   }
+  ],
+  "end": 990
+ },
+ {
+  "wk": {
+   "runSec": 60,
+   "walkSec": 90,
+   "repeats": 6
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 150,
+    "kind": "walk"
+   },
+   {
+    "t": 240,
+    "kind": "run"
+   },
+   {
+    "t": 300,
+    "kind": "walk"
+   },
+   {
+    "t": 390,
+    "kind": "run"
+   },
+   {
+    "t": 450,
+    "kind": "walk"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 690,
+    "kind": "run"
+   },
+   {
+    "t": 750,
+    "kind": "walk"
+   },
+   {
+    "t": 840,
+    "kind": "lastrun"
+   },
+   {
+    "t": 900,
+    "kind": "cooldown"
+   },
+   {
+    "t": 990,
+    "kind": "done"
+   }
+  ],
+  "end": 990
+ },
+ {
+  "wk": {
+   "runSec": 300,
+   "walkSec": 120,
+   "repeats": 3
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 117,
+    "kind": "beep"
+   },
+   {
+    "t": 118,
+    "kind": "beep"
+   },
+   {
+    "t": 119,
+    "kind": "beep"
+   },
+   {
+    "t": 120,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "oneminute"
+   },
+   {
+    "t": 417,
+    "kind": "beep"
+   },
+   {
+    "t": 418,
+    "kind": "beep"
+   },
+   {
+    "t": 419,
+    "kind": "beep"
+   },
+   {
+    "t": 420,
+    "kind": "walk"
+   },
+   {
+    "t": 537,
+    "kind": "beep"
+   },
+   {
+    "t": 538,
+    "kind": "beep"
+   },
+   {
+    "t": 539,
+    "kind": "beep"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 690,
+    "kind": "halfway"
+   },
+   {
+    "t": 780,
+    "kind": "oneminute"
+   },
+   {
+    "t": 837,
+    "kind": "beep"
+   },
+   {
+    "t": 838,
+    "kind": "beep"
+   },
+   {
+    "t": 839,
+    "kind": "beep"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 957,
+    "kind": "beep"
+   },
+   {
+    "t": 958,
+    "kind": "beep"
+   },
+   {
+    "t": 959,
+    "kind": "beep"
+   },
+   {
+    "t": 960,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1200,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1257,
+    "kind": "beep"
+   },
+   {
+    "t": 1258,
+    "kind": "beep"
+   },
+   {
+    "t": 1259,
+    "kind": "beep"
+   },
+   {
+    "t": 1260,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1380,
+    "kind": "done"
+   }
+  ],
+  "end": 1380
+ },
+ {
+  "wk": {
+   "runSec": 300,
+   "walkSec": 120,
+   "repeats": 3
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 120,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "oneminute"
+   },
+   {
+    "t": 420,
+    "kind": "walk"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 690,
+    "kind": "halfway"
+   },
+   {
+    "t": 780,
+    "kind": "oneminute"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 960,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1200,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1260,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1380,
+    "kind": "done"
+   }
+  ],
+  "end": 1380
+ },
+ {
+  "wk": {
+   "runSec": 300,
+   "walkSec": 120,
+   "repeats": 3
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 117,
+    "kind": "beep"
+   },
+   {
+    "t": 118,
+    "kind": "beep"
+   },
+   {
+    "t": 119,
+    "kind": "beep"
+   },
+   {
+    "t": 120,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "oneminute"
+   },
+   {
+    "t": 417,
+    "kind": "beep"
+   },
+   {
+    "t": 418,
+    "kind": "beep"
+   },
+   {
+    "t": 419,
+    "kind": "beep"
+   },
+   {
+    "t": 420,
+    "kind": "walk"
+   },
+   {
+    "t": 537,
+    "kind": "beep"
+   },
+   {
+    "t": 538,
+    "kind": "beep"
+   },
+   {
+    "t": 539,
+    "kind": "beep"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 780,
+    "kind": "oneminute"
+   },
+   {
+    "t": 837,
+    "kind": "beep"
+   },
+   {
+    "t": 838,
+    "kind": "beep"
+   },
+   {
+    "t": 839,
+    "kind": "beep"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 957,
+    "kind": "beep"
+   },
+   {
+    "t": 958,
+    "kind": "beep"
+   },
+   {
+    "t": 959,
+    "kind": "beep"
+   },
+   {
+    "t": 960,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1200,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1257,
+    "kind": "beep"
+   },
+   {
+    "t": 1258,
+    "kind": "beep"
+   },
+   {
+    "t": 1259,
+    "kind": "beep"
+   },
+   {
+    "t": 1260,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1380,
+    "kind": "done"
+   }
+  ],
+  "end": 1380
+ },
+ {
+  "wk": {
+   "runSec": 300,
+   "walkSec": 120,
+   "repeats": 3
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 120,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "oneminute"
+   },
+   {
+    "t": 420,
+    "kind": "walk"
+   },
+   {
+    "t": 540,
+    "kind": "run"
+   },
+   {
+    "t": 780,
+    "kind": "oneminute"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 960,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1200,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1260,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1380,
+    "kind": "done"
+   }
+  ],
+  "end": 1380
+ },
+ {
+  "wk": {
+   "runSec": 1800,
+   "walkSec": 90,
+   "repeats": 1
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 87,
+    "kind": "beep"
+   },
+   {
+    "t": 88,
+    "kind": "beep"
+   },
+   {
+    "t": 89,
+    "kind": "beep"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 990,
+    "kind": "halfway"
+   },
+   {
+    "t": 1830,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1887,
+    "kind": "beep"
+   },
+   {
+    "t": 1888,
+    "kind": "beep"
+   },
+   {
+    "t": 1889,
+    "kind": "beep"
+   },
+   {
+    "t": 1890,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1980,
+    "kind": "done"
+   }
+  ],
+  "end": 1980
+ },
+ {
+  "wk": {
+   "runSec": 1800,
+   "walkSec": 90,
+   "repeats": 1
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 990,
+    "kind": "halfway"
+   },
+   {
+    "t": 1830,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1890,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1980,
+    "kind": "done"
+   }
+  ],
+  "end": 1980
+ },
+ {
+  "wk": {
+   "runSec": 1800,
+   "walkSec": 90,
+   "repeats": 1
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 87,
+    "kind": "beep"
+   },
+   {
+    "t": 88,
+    "kind": "beep"
+   },
+   {
+    "t": 89,
+    "kind": "beep"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 1830,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1887,
+    "kind": "beep"
+   },
+   {
+    "t": 1888,
+    "kind": "beep"
+   },
+   {
+    "t": 1889,
+    "kind": "beep"
+   },
+   {
+    "t": 1890,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1980,
+    "kind": "done"
+   }
+  ],
+  "end": 1980
+ },
+ {
+  "wk": {
+   "runSec": 1800,
+   "walkSec": 90,
+   "repeats": 1
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 90,
+    "kind": "run"
+   },
+   {
+    "t": 1830,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1890,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1980,
+    "kind": "done"
+   }
+  ],
+  "end": 1980
+ },
+ {
+  "wk": {
+   "runSec": 1200,
+   "walkSec": 0,
+   "repeats": 1
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 600,
+    "kind": "halfway"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1200,
+    "kind": "done"
+   }
+  ],
+  "end": 1200
+ },
+ {
+  "wk": {
+   "runSec": 1200,
+   "walkSec": 0,
+   "repeats": 1
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 600,
+    "kind": "halfway"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1200,
+    "kind": "done"
+   }
+  ],
+  "end": 1200
+ },
+ {
+  "wk": {
+   "runSec": 1200,
+   "walkSec": 0,
+   "repeats": 1
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1200,
+    "kind": "done"
+   }
+  ],
+  "end": 1200
+ },
+ {
+  "wk": {
+   "runSec": 1200,
+   "walkSec": 0,
+   "repeats": 1
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1200,
+    "kind": "done"
+   }
+  ],
+  "end": 1200
+ },
+ {
+  "wk": {
+   "runSec": 600,
+   "walkSec": 0,
+   "repeats": 3
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 540,
+    "kind": "oneminute"
+   },
+   {
+    "t": 597,
+    "kind": "beep"
+   },
+   {
+    "t": 598,
+    "kind": "beep"
+   },
+   {
+    "t": 599,
+    "kind": "beep"
+   },
+   {
+    "t": 600,
+    "kind": "run"
+   },
+   {
+    "t": 900,
+    "kind": "halfway"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1197,
+    "kind": "beep"
+   },
+   {
+    "t": 1198,
+    "kind": "beep"
+   },
+   {
+    "t": 1199,
+    "kind": "beep"
+   },
+   {
+    "t": 1200,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1740,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1800,
+    "kind": "done"
+   }
+  ],
+  "end": 1800
+ },
+ {
+  "wk": {
+   "runSec": 600,
+   "walkSec": 0,
+   "repeats": 3
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 540,
+    "kind": "oneminute"
+   },
+   {
+    "t": 600,
+    "kind": "run"
+   },
+   {
+    "t": 900,
+    "kind": "halfway"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1200,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1740,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1800,
+    "kind": "done"
+   }
+  ],
+  "end": 1800
+ },
+ {
+  "wk": {
+   "runSec": 600,
+   "walkSec": 0,
+   "repeats": 3
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 540,
+    "kind": "oneminute"
+   },
+   {
+    "t": 597,
+    "kind": "beep"
+   },
+   {
+    "t": 598,
+    "kind": "beep"
+   },
+   {
+    "t": 599,
+    "kind": "beep"
+   },
+   {
+    "t": 600,
+    "kind": "run"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1197,
+    "kind": "beep"
+   },
+   {
+    "t": 1198,
+    "kind": "beep"
+   },
+   {
+    "t": 1199,
+    "kind": "beep"
+   },
+   {
+    "t": 1200,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1740,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1800,
+    "kind": "done"
+   }
+  ],
+  "end": 1800
+ },
+ {
+  "wk": {
+   "runSec": 600,
+   "walkSec": 0,
+   "repeats": 3
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 540,
+    "kind": "oneminute"
+   },
+   {
+    "t": 600,
+    "kind": "run"
+   },
+   {
+    "t": 1140,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1200,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1740,
+    "kind": "oneminute"
+   },
+   {
+    "t": 1800,
+    "kind": "done"
+   }
+  ],
+  "end": 1800
+ },
+ {
+  "wk": {
+   "runSec": 5,
+   "walkSec": 4,
+   "repeats": 3
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 4,
+    "kind": "run"
+   },
+   {
+    "t": 9,
+    "kind": "walk"
+   },
+   {
+    "t": 13,
+    "kind": "run"
+   },
+   {
+    "t": 18,
+    "kind": "walk"
+   },
+   {
+    "t": 22,
+    "kind": "lastrun"
+   },
+   {
+    "t": 27,
+    "kind": "cooldown"
+   },
+   {
+    "t": 31,
+    "kind": "done"
+   }
+  ],
+  "end": 31
+ },
+ {
+  "wk": {
+   "runSec": 5,
+   "walkSec": 4,
+   "repeats": 3
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 4,
+    "kind": "run"
+   },
+   {
+    "t": 9,
+    "kind": "walk"
+   },
+   {
+    "t": 13,
+    "kind": "run"
+   },
+   {
+    "t": 18,
+    "kind": "walk"
+   },
+   {
+    "t": 22,
+    "kind": "lastrun"
+   },
+   {
+    "t": 27,
+    "kind": "cooldown"
+   },
+   {
+    "t": 31,
+    "kind": "done"
+   }
+  ],
+  "end": 31
+ },
+ {
+  "wk": {
+   "runSec": 5,
+   "walkSec": 4,
+   "repeats": 3
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 4,
+    "kind": "run"
+   },
+   {
+    "t": 9,
+    "kind": "walk"
+   },
+   {
+    "t": 13,
+    "kind": "run"
+   },
+   {
+    "t": 18,
+    "kind": "walk"
+   },
+   {
+    "t": 22,
+    "kind": "lastrun"
+   },
+   {
+    "t": 27,
+    "kind": "cooldown"
+   },
+   {
+    "t": 31,
+    "kind": "done"
+   }
+  ],
+  "end": 31
+ },
+ {
+  "wk": {
+   "runSec": 5,
+   "walkSec": 4,
+   "repeats": 3
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 4,
+    "kind": "run"
+   },
+   {
+    "t": 9,
+    "kind": "walk"
+   },
+   {
+    "t": 13,
+    "kind": "run"
+   },
+   {
+    "t": 18,
+    "kind": "walk"
+   },
+   {
+    "t": 22,
+    "kind": "lastrun"
+   },
+   {
+    "t": 27,
+    "kind": "cooldown"
+   },
+   {
+    "t": 31,
+    "kind": "done"
+   }
+  ],
+  "end": 31
+ },
+ {
+  "wk": {
+   "runSec": 180,
+   "walkSec": 60,
+   "repeats": 2
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 57,
+    "kind": "beep"
+   },
+   {
+    "t": 58,
+    "kind": "beep"
+   },
+   {
+    "t": 59,
+    "kind": "beep"
+   },
+   {
+    "t": 60,
+    "kind": "run"
+   },
+   {
+    "t": 180,
+    "kind": "oneminute"
+   },
+   {
+    "t": 237,
+    "kind": "beep"
+   },
+   {
+    "t": 238,
+    "kind": "beep"
+   },
+   {
+    "t": 239,
+    "kind": "beep"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 270,
+    "kind": "halfway"
+   },
+   {
+    "t": 297,
+    "kind": "beep"
+   },
+   {
+    "t": 298,
+    "kind": "beep"
+   },
+   {
+    "t": 299,
+    "kind": "beep"
+   },
+   {
+    "t": 300,
+    "kind": "lastrun"
+   },
+   {
+    "t": 420,
+    "kind": "oneminute"
+   },
+   {
+    "t": 477,
+    "kind": "beep"
+   },
+   {
+    "t": 478,
+    "kind": "beep"
+   },
+   {
+    "t": 479,
+    "kind": "beep"
+   },
+   {
+    "t": 480,
+    "kind": "cooldown"
+   },
+   {
+    "t": 540,
+    "kind": "done"
+   }
+  ],
+  "end": 540
+ },
+ {
+  "wk": {
+   "runSec": 180,
+   "walkSec": 60,
+   "repeats": 2
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 60,
+    "kind": "run"
+   },
+   {
+    "t": 180,
+    "kind": "oneminute"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 270,
+    "kind": "halfway"
+   },
+   {
+    "t": 300,
+    "kind": "lastrun"
+   },
+   {
+    "t": 420,
+    "kind": "oneminute"
+   },
+   {
+    "t": 480,
+    "kind": "cooldown"
+   },
+   {
+    "t": 540,
+    "kind": "done"
+   }
+  ],
+  "end": 540
+ },
+ {
+  "wk": {
+   "runSec": 180,
+   "walkSec": 60,
+   "repeats": 2
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 57,
+    "kind": "beep"
+   },
+   {
+    "t": 58,
+    "kind": "beep"
+   },
+   {
+    "t": 59,
+    "kind": "beep"
+   },
+   {
+    "t": 60,
+    "kind": "run"
+   },
+   {
+    "t": 180,
+    "kind": "oneminute"
+   },
+   {
+    "t": 237,
+    "kind": "beep"
+   },
+   {
+    "t": 238,
+    "kind": "beep"
+   },
+   {
+    "t": 239,
+    "kind": "beep"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 297,
+    "kind": "beep"
+   },
+   {
+    "t": 298,
+    "kind": "beep"
+   },
+   {
+    "t": 299,
+    "kind": "beep"
+   },
+   {
+    "t": 300,
+    "kind": "lastrun"
+   },
+   {
+    "t": 420,
+    "kind": "oneminute"
+   },
+   {
+    "t": 477,
+    "kind": "beep"
+   },
+   {
+    "t": 478,
+    "kind": "beep"
+   },
+   {
+    "t": 479,
+    "kind": "beep"
+   },
+   {
+    "t": 480,
+    "kind": "cooldown"
+   },
+   {
+    "t": 540,
+    "kind": "done"
+   }
+  ],
+  "end": 540
+ },
+ {
+  "wk": {
+   "runSec": 180,
+   "walkSec": 60,
+   "repeats": 2
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 60,
+    "kind": "run"
+   },
+   {
+    "t": 180,
+    "kind": "oneminute"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 300,
+    "kind": "lastrun"
+   },
+   {
+    "t": 420,
+    "kind": "oneminute"
+   },
+   {
+    "t": 480,
+    "kind": "cooldown"
+   },
+   {
+    "t": 540,
+    "kind": "done"
+   }
+  ],
+  "end": 540
+ },
+ {
+  "wk": {
+   "runSec": 15,
+   "walkSec": 15,
+   "repeats": 1
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 12,
+    "kind": "beep"
+   },
+   {
+    "t": 13,
+    "kind": "beep"
+   },
+   {
+    "t": 14,
+    "kind": "beep"
+   },
+   {
+    "t": 15,
+    "kind": "run"
+   },
+   {
+    "t": 22.5,
+    "kind": "halfway"
+   },
+   {
+    "t": 27,
+    "kind": "beep"
+   },
+   {
+    "t": 28,
+    "kind": "beep"
+   },
+   {
+    "t": 29,
+    "kind": "beep"
+   },
+   {
+    "t": 30,
+    "kind": "cooldown"
+   },
+   {
+    "t": 45,
+    "kind": "done"
+   }
+  ],
+  "end": 45
+ },
+ {
+  "wk": {
+   "runSec": 15,
+   "walkSec": 15,
+   "repeats": 1
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 15,
+    "kind": "run"
+   },
+   {
+    "t": 22.5,
+    "kind": "halfway"
+   },
+   {
+    "t": 30,
+    "kind": "cooldown"
+   },
+   {
+    "t": 45,
+    "kind": "done"
+   }
+  ],
+  "end": 45
+ },
+ {
+  "wk": {
+   "runSec": 15,
+   "walkSec": 15,
+   "repeats": 1
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 12,
+    "kind": "beep"
+   },
+   {
+    "t": 13,
+    "kind": "beep"
+   },
+   {
+    "t": 14,
+    "kind": "beep"
+   },
+   {
+    "t": 15,
+    "kind": "run"
+   },
+   {
+    "t": 27,
+    "kind": "beep"
+   },
+   {
+    "t": 28,
+    "kind": "beep"
+   },
+   {
+    "t": 29,
+    "kind": "beep"
+   },
+   {
+    "t": 30,
+    "kind": "cooldown"
+   },
+   {
+    "t": 45,
+    "kind": "done"
+   }
+  ],
+  "end": 45
+ },
+ {
+  "wk": {
+   "runSec": 15,
+   "walkSec": 15,
+   "repeats": 1
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 15,
+    "kind": "run"
+   },
+   {
+    "t": 30,
+    "kind": "cooldown"
+   },
+   {
+    "t": 45,
+    "kind": "done"
+   }
+  ],
+  "end": 45
+ },
+ {
+  "wk": {
+   "runSec": 45,
+   "walkSec": 75,
+   "repeats": 10
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 72,
+    "kind": "beep"
+   },
+   {
+    "t": 73,
+    "kind": "beep"
+   },
+   {
+    "t": 74,
+    "kind": "beep"
+   },
+   {
+    "t": 75,
+    "kind": "run"
+   },
+   {
+    "t": 117,
+    "kind": "beep"
+   },
+   {
+    "t": 118,
+    "kind": "beep"
+   },
+   {
+    "t": 119,
+    "kind": "beep"
+   },
+   {
+    "t": 120,
+    "kind": "walk"
+   },
+   {
+    "t": 192,
+    "kind": "beep"
+   },
+   {
+    "t": 193,
+    "kind": "beep"
+   },
+   {
+    "t": 194,
+    "kind": "beep"
+   },
+   {
+    "t": 195,
+    "kind": "run"
+   },
+   {
+    "t": 237,
+    "kind": "beep"
+   },
+   {
+    "t": 238,
+    "kind": "beep"
+   },
+   {
+    "t": 239,
+    "kind": "beep"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 312,
+    "kind": "beep"
+   },
+   {
+    "t": 313,
+    "kind": "beep"
+   },
+   {
+    "t": 314,
+    "kind": "beep"
+   },
+   {
+    "t": 315,
+    "kind": "run"
+   },
+   {
+    "t": 357,
+    "kind": "beep"
+   },
+   {
+    "t": 358,
+    "kind": "beep"
+   },
+   {
+    "t": 359,
+    "kind": "beep"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 432,
+    "kind": "beep"
+   },
+   {
+    "t": 433,
+    "kind": "beep"
+   },
+   {
+    "t": 434,
+    "kind": "beep"
+   },
+   {
+    "t": 435,
+    "kind": "run"
+   },
+   {
+    "t": 477,
+    "kind": "beep"
+   },
+   {
+    "t": 478,
+    "kind": "beep"
+   },
+   {
+    "t": 479,
+    "kind": "beep"
+   },
+   {
+    "t": 480,
+    "kind": "walk"
+   },
+   {
+    "t": 552,
+    "kind": "beep"
+   },
+   {
+    "t": 553,
+    "kind": "beep"
+   },
+   {
+    "t": 554,
+    "kind": "beep"
+   },
+   {
+    "t": 555,
+    "kind": "run"
+   },
+   {
+    "t": 597,
+    "kind": "beep"
+   },
+   {
+    "t": 598,
+    "kind": "beep"
+   },
+   {
+    "t": 599,
+    "kind": "beep"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 637.5,
+    "kind": "halfway"
+   },
+   {
+    "t": 672,
+    "kind": "beep"
+   },
+   {
+    "t": 673,
+    "kind": "beep"
+   },
+   {
+    "t": 674,
+    "kind": "beep"
+   },
+   {
+    "t": 675,
+    "kind": "run"
+   },
+   {
+    "t": 717,
+    "kind": "beep"
+   },
+   {
+    "t": 718,
+    "kind": "beep"
+   },
+   {
+    "t": 719,
+    "kind": "beep"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 792,
+    "kind": "beep"
+   },
+   {
+    "t": 793,
+    "kind": "beep"
+   },
+   {
+    "t": 794,
+    "kind": "beep"
+   },
+   {
+    "t": 795,
+    "kind": "run"
+   },
+   {
+    "t": 837,
+    "kind": "beep"
+   },
+   {
+    "t": 838,
+    "kind": "beep"
+   },
+   {
+    "t": 839,
+    "kind": "beep"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 912,
+    "kind": "beep"
+   },
+   {
+    "t": 913,
+    "kind": "beep"
+   },
+   {
+    "t": 914,
+    "kind": "beep"
+   },
+   {
+    "t": 915,
+    "kind": "run"
+   },
+   {
+    "t": 957,
+    "kind": "beep"
+   },
+   {
+    "t": 958,
+    "kind": "beep"
+   },
+   {
+    "t": 959,
+    "kind": "beep"
+   },
+   {
+    "t": 960,
+    "kind": "walk"
+   },
+   {
+    "t": 1032,
+    "kind": "beep"
+   },
+   {
+    "t": 1033,
+    "kind": "beep"
+   },
+   {
+    "t": 1034,
+    "kind": "beep"
+   },
+   {
+    "t": 1035,
+    "kind": "run"
+   },
+   {
+    "t": 1077,
+    "kind": "beep"
+   },
+   {
+    "t": 1078,
+    "kind": "beep"
+   },
+   {
+    "t": 1079,
+    "kind": "beep"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1152,
+    "kind": "beep"
+   },
+   {
+    "t": 1153,
+    "kind": "beep"
+   },
+   {
+    "t": 1154,
+    "kind": "beep"
+   },
+   {
+    "t": 1155,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1197,
+    "kind": "beep"
+   },
+   {
+    "t": 1198,
+    "kind": "beep"
+   },
+   {
+    "t": 1199,
+    "kind": "beep"
+   },
+   {
+    "t": 1200,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1275,
+    "kind": "done"
+   }
+  ],
+  "end": 1275
+ },
+ {
+  "wk": {
+   "runSec": 45,
+   "walkSec": 75,
+   "repeats": 10
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 75,
+    "kind": "run"
+   },
+   {
+    "t": 120,
+    "kind": "walk"
+   },
+   {
+    "t": 195,
+    "kind": "run"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 315,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 435,
+    "kind": "run"
+   },
+   {
+    "t": 480,
+    "kind": "walk"
+   },
+   {
+    "t": 555,
+    "kind": "run"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 637.5,
+    "kind": "halfway"
+   },
+   {
+    "t": 675,
+    "kind": "run"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 795,
+    "kind": "run"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 915,
+    "kind": "run"
+   },
+   {
+    "t": 960,
+    "kind": "walk"
+   },
+   {
+    "t": 1035,
+    "kind": "run"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1155,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1200,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1275,
+    "kind": "done"
+   }
+  ],
+  "end": 1275
+ },
+ {
+  "wk": {
+   "runSec": 45,
+   "walkSec": 75,
+   "repeats": 10
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 72,
+    "kind": "beep"
+   },
+   {
+    "t": 73,
+    "kind": "beep"
+   },
+   {
+    "t": 74,
+    "kind": "beep"
+   },
+   {
+    "t": 75,
+    "kind": "run"
+   },
+   {
+    "t": 117,
+    "kind": "beep"
+   },
+   {
+    "t": 118,
+    "kind": "beep"
+   },
+   {
+    "t": 119,
+    "kind": "beep"
+   },
+   {
+    "t": 120,
+    "kind": "walk"
+   },
+   {
+    "t": 192,
+    "kind": "beep"
+   },
+   {
+    "t": 193,
+    "kind": "beep"
+   },
+   {
+    "t": 194,
+    "kind": "beep"
+   },
+   {
+    "t": 195,
+    "kind": "run"
+   },
+   {
+    "t": 237,
+    "kind": "beep"
+   },
+   {
+    "t": 238,
+    "kind": "beep"
+   },
+   {
+    "t": 239,
+    "kind": "beep"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 312,
+    "kind": "beep"
+   },
+   {
+    "t": 313,
+    "kind": "beep"
+   },
+   {
+    "t": 314,
+    "kind": "beep"
+   },
+   {
+    "t": 315,
+    "kind": "run"
+   },
+   {
+    "t": 357,
+    "kind": "beep"
+   },
+   {
+    "t": 358,
+    "kind": "beep"
+   },
+   {
+    "t": 359,
+    "kind": "beep"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 432,
+    "kind": "beep"
+   },
+   {
+    "t": 433,
+    "kind": "beep"
+   },
+   {
+    "t": 434,
+    "kind": "beep"
+   },
+   {
+    "t": 435,
+    "kind": "run"
+   },
+   {
+    "t": 477,
+    "kind": "beep"
+   },
+   {
+    "t": 478,
+    "kind": "beep"
+   },
+   {
+    "t": 479,
+    "kind": "beep"
+   },
+   {
+    "t": 480,
+    "kind": "walk"
+   },
+   {
+    "t": 552,
+    "kind": "beep"
+   },
+   {
+    "t": 553,
+    "kind": "beep"
+   },
+   {
+    "t": 554,
+    "kind": "beep"
+   },
+   {
+    "t": 555,
+    "kind": "run"
+   },
+   {
+    "t": 597,
+    "kind": "beep"
+   },
+   {
+    "t": 598,
+    "kind": "beep"
+   },
+   {
+    "t": 599,
+    "kind": "beep"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 672,
+    "kind": "beep"
+   },
+   {
+    "t": 673,
+    "kind": "beep"
+   },
+   {
+    "t": 674,
+    "kind": "beep"
+   },
+   {
+    "t": 675,
+    "kind": "run"
+   },
+   {
+    "t": 717,
+    "kind": "beep"
+   },
+   {
+    "t": 718,
+    "kind": "beep"
+   },
+   {
+    "t": 719,
+    "kind": "beep"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 792,
+    "kind": "beep"
+   },
+   {
+    "t": 793,
+    "kind": "beep"
+   },
+   {
+    "t": 794,
+    "kind": "beep"
+   },
+   {
+    "t": 795,
+    "kind": "run"
+   },
+   {
+    "t": 837,
+    "kind": "beep"
+   },
+   {
+    "t": 838,
+    "kind": "beep"
+   },
+   {
+    "t": 839,
+    "kind": "beep"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 912,
+    "kind": "beep"
+   },
+   {
+    "t": 913,
+    "kind": "beep"
+   },
+   {
+    "t": 914,
+    "kind": "beep"
+   },
+   {
+    "t": 915,
+    "kind": "run"
+   },
+   {
+    "t": 957,
+    "kind": "beep"
+   },
+   {
+    "t": 958,
+    "kind": "beep"
+   },
+   {
+    "t": 959,
+    "kind": "beep"
+   },
+   {
+    "t": 960,
+    "kind": "walk"
+   },
+   {
+    "t": 1032,
+    "kind": "beep"
+   },
+   {
+    "t": 1033,
+    "kind": "beep"
+   },
+   {
+    "t": 1034,
+    "kind": "beep"
+   },
+   {
+    "t": 1035,
+    "kind": "run"
+   },
+   {
+    "t": 1077,
+    "kind": "beep"
+   },
+   {
+    "t": 1078,
+    "kind": "beep"
+   },
+   {
+    "t": 1079,
+    "kind": "beep"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1152,
+    "kind": "beep"
+   },
+   {
+    "t": 1153,
+    "kind": "beep"
+   },
+   {
+    "t": 1154,
+    "kind": "beep"
+   },
+   {
+    "t": 1155,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1197,
+    "kind": "beep"
+   },
+   {
+    "t": 1198,
+    "kind": "beep"
+   },
+   {
+    "t": 1199,
+    "kind": "beep"
+   },
+   {
+    "t": 1200,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1275,
+    "kind": "done"
+   }
+  ],
+  "end": 1275
+ },
+ {
+  "wk": {
+   "runSec": 45,
+   "walkSec": 75,
+   "repeats": 10
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 75,
+    "kind": "run"
+   },
+   {
+    "t": 120,
+    "kind": "walk"
+   },
+   {
+    "t": 195,
+    "kind": "run"
+   },
+   {
+    "t": 240,
+    "kind": "walk"
+   },
+   {
+    "t": 315,
+    "kind": "run"
+   },
+   {
+    "t": 360,
+    "kind": "walk"
+   },
+   {
+    "t": 435,
+    "kind": "run"
+   },
+   {
+    "t": 480,
+    "kind": "walk"
+   },
+   {
+    "t": 555,
+    "kind": "run"
+   },
+   {
+    "t": 600,
+    "kind": "walk"
+   },
+   {
+    "t": 675,
+    "kind": "run"
+   },
+   {
+    "t": 720,
+    "kind": "walk"
+   },
+   {
+    "t": 795,
+    "kind": "run"
+   },
+   {
+    "t": 840,
+    "kind": "walk"
+   },
+   {
+    "t": 915,
+    "kind": "run"
+   },
+   {
+    "t": 960,
+    "kind": "walk"
+   },
+   {
+    "t": 1035,
+    "kind": "run"
+   },
+   {
+    "t": 1080,
+    "kind": "walk"
+   },
+   {
+    "t": 1155,
+    "kind": "lastrun"
+   },
+   {
+    "t": 1200,
+    "kind": "cooldown"
+   },
+   {
+    "t": 1275,
+    "kind": "done"
+   }
+  ],
+  "end": 1275
+ },
+ {
+  "wk": {
+   "runSec": 240,
+   "walkSec": 5,
+   "repeats": 4
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 5,
+    "kind": "run"
+   },
+   {
+    "t": 185,
+    "kind": "oneminute"
+   },
+   {
+    "t": 242,
+    "kind": "beep"
+   },
+   {
+    "t": 243,
+    "kind": "beep"
+   },
+   {
+    "t": 244,
+    "kind": "beep"
+   },
+   {
+    "t": 245,
+    "kind": "walk"
+   },
+   {
+    "t": 250,
+    "kind": "run"
+   },
+   {
+    "t": 430,
+    "kind": "oneminute"
+   },
+   {
+    "t": 487,
+    "kind": "beep"
+   },
+   {
+    "t": 488,
+    "kind": "beep"
+   },
+   {
+    "t": 489,
+    "kind": "beep"
+   },
+   {
+    "t": 490,
+    "kind": "walk"
+   },
+   {
+    "t": 495,
+    "kind": "run"
+   },
+   {
+    "t": 675,
+    "kind": "oneminute"
+   },
+   {
+    "t": 732,
+    "kind": "beep"
+   },
+   {
+    "t": 733,
+    "kind": "beep"
+   },
+   {
+    "t": 734,
+    "kind": "beep"
+   },
+   {
+    "t": 735,
+    "kind": "walk"
+   },
+   {
+    "t": 740,
+    "kind": "lastrun"
+   },
+   {
+    "t": 920,
+    "kind": "oneminute"
+   },
+   {
+    "t": 977,
+    "kind": "beep"
+   },
+   {
+    "t": 978,
+    "kind": "beep"
+   },
+   {
+    "t": 979,
+    "kind": "beep"
+   },
+   {
+    "t": 980,
+    "kind": "cooldown"
+   },
+   {
+    "t": 985,
+    "kind": "done"
+   }
+  ],
+  "end": 985
+ },
+ {
+  "wk": {
+   "runSec": 240,
+   "walkSec": 5,
+   "repeats": 4
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 5,
+    "kind": "run"
+   },
+   {
+    "t": 185,
+    "kind": "oneminute"
+   },
+   {
+    "t": 245,
+    "kind": "walk"
+   },
+   {
+    "t": 250,
+    "kind": "run"
+   },
+   {
+    "t": 430,
+    "kind": "oneminute"
+   },
+   {
+    "t": 490,
+    "kind": "walk"
+   },
+   {
+    "t": 495,
+    "kind": "run"
+   },
+   {
+    "t": 675,
+    "kind": "oneminute"
+   },
+   {
+    "t": 735,
+    "kind": "walk"
+   },
+   {
+    "t": 740,
+    "kind": "lastrun"
+   },
+   {
+    "t": 920,
+    "kind": "oneminute"
+   },
+   {
+    "t": 980,
+    "kind": "cooldown"
+   },
+   {
+    "t": 985,
+    "kind": "done"
+   }
+  ],
+  "end": 985
+ },
+ {
+  "wk": {
+   "runSec": 240,
+   "walkSec": 5,
+   "repeats": 4
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 5,
+    "kind": "run"
+   },
+   {
+    "t": 185,
+    "kind": "oneminute"
+   },
+   {
+    "t": 242,
+    "kind": "beep"
+   },
+   {
+    "t": 243,
+    "kind": "beep"
+   },
+   {
+    "t": 244,
+    "kind": "beep"
+   },
+   {
+    "t": 245,
+    "kind": "walk"
+   },
+   {
+    "t": 250,
+    "kind": "run"
+   },
+   {
+    "t": 430,
+    "kind": "oneminute"
+   },
+   {
+    "t": 487,
+    "kind": "beep"
+   },
+   {
+    "t": 488,
+    "kind": "beep"
+   },
+   {
+    "t": 489,
+    "kind": "beep"
+   },
+   {
+    "t": 490,
+    "kind": "walk"
+   },
+   {
+    "t": 495,
+    "kind": "run"
+   },
+   {
+    "t": 675,
+    "kind": "oneminute"
+   },
+   {
+    "t": 732,
+    "kind": "beep"
+   },
+   {
+    "t": 733,
+    "kind": "beep"
+   },
+   {
+    "t": 734,
+    "kind": "beep"
+   },
+   {
+    "t": 735,
+    "kind": "walk"
+   },
+   {
+    "t": 740,
+    "kind": "lastrun"
+   },
+   {
+    "t": 920,
+    "kind": "oneminute"
+   },
+   {
+    "t": 977,
+    "kind": "beep"
+   },
+   {
+    "t": 978,
+    "kind": "beep"
+   },
+   {
+    "t": 979,
+    "kind": "beep"
+   },
+   {
+    "t": 980,
+    "kind": "cooldown"
+   },
+   {
+    "t": 985,
+    "kind": "done"
+   }
+  ],
+  "end": 985
+ },
+ {
+  "wk": {
+   "runSec": 240,
+   "walkSec": 5,
+   "repeats": 4
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 5,
+    "kind": "run"
+   },
+   {
+    "t": 185,
+    "kind": "oneminute"
+   },
+   {
+    "t": 245,
+    "kind": "walk"
+   },
+   {
+    "t": 250,
+    "kind": "run"
+   },
+   {
+    "t": 430,
+    "kind": "oneminute"
+   },
+   {
+    "t": 490,
+    "kind": "walk"
+   },
+   {
+    "t": 495,
+    "kind": "run"
+   },
+   {
+    "t": 675,
+    "kind": "oneminute"
+   },
+   {
+    "t": 735,
+    "kind": "walk"
+   },
+   {
+    "t": 740,
+    "kind": "lastrun"
+   },
+   {
+    "t": 920,
+    "kind": "oneminute"
+   },
+   {
+    "t": 980,
+    "kind": "cooldown"
+   },
+   {
+    "t": 985,
+    "kind": "done"
+   }
+  ],
+  "end": 985
+ },
+ {
+  "wk": {
+   "runSec": 7,
+   "walkSec": 0,
+   "repeats": 2
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 4,
+    "kind": "beep"
+   },
+   {
+    "t": 5,
+    "kind": "beep"
+   },
+   {
+    "t": 6,
+    "kind": "beep"
+   },
+   {
+    "t": 7,
+    "kind": "lastrun"
+   },
+   {
+    "t": 14,
+    "kind": "done"
+   }
+  ],
+  "end": 14
+ },
+ {
+  "wk": {
+   "runSec": 7,
+   "walkSec": 0,
+   "repeats": 2
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 7,
+    "kind": "lastrun"
+   },
+   {
+    "t": 14,
+    "kind": "done"
+   }
+  ],
+  "end": 14
+ },
+ {
+  "wk": {
+   "runSec": 7,
+   "walkSec": 0,
+   "repeats": 2
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 4,
+    "kind": "beep"
+   },
+   {
+    "t": 5,
+    "kind": "beep"
+   },
+   {
+    "t": 6,
+    "kind": "beep"
+   },
+   {
+    "t": 7,
+    "kind": "lastrun"
+   },
+   {
+    "t": 14,
+    "kind": "done"
+   }
+  ],
+  "end": 14
+ },
+ {
+  "wk": {
+   "runSec": 7,
+   "walkSec": 0,
+   "repeats": 2
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "run"
+   },
+   {
+    "t": 7,
+    "kind": "lastrun"
+   },
+   {
+    "t": 14,
+    "kind": "done"
+   }
+  ],
+  "end": 14
+ },
+ {
+  "wk": {
+   "runSec": 30,
+   "walkSec": 30,
+   "repeats": 0
+  },
+  "opts": {},
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 30,
+    "kind": "done"
+   }
+  ],
+  "end": 30
+ },
+ {
+  "wk": {
+   "runSec": 30,
+   "walkSec": 30,
+   "repeats": 0
+  },
+  "opts": {
+   "beeps": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 30,
+    "kind": "done"
+   }
+  ],
+  "end": 30
+ },
+ {
+  "wk": {
+   "runSec": 30,
+   "walkSec": 30,
+   "repeats": 0
+  },
+  "opts": {
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 30,
+    "kind": "done"
+   }
+  ],
+  "end": 30
+ },
+ {
+  "wk": {
+   "runSec": 30,
+   "walkSec": 30,
+   "repeats": 0
+  },
+  "opts": {
+   "beeps": false,
+   "halfway": false
+  },
+  "events": [
+   {
+    "t": 0,
+    "kind": "warmup"
+   },
+   {
+    "t": 30,
+    "kind": "done"
+   }
+  ],
+  "end": 30
+ }
+]
