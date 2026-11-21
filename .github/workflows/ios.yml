@@ -7,9 +7,9 @@ name: iOS
 on:
   push:
     branches: [main]
-    paths: ['ios/**', '.github/workflows/ios.yml']
+    paths: ['ios/**', 'audio/**', '.github/workflows/ios.yml']
   pull_request:
-    paths: ['ios/**', '.github/workflows/ios.yml']
+    paths: ['ios/**', 'audio/**', '.github/workflows/ios.yml']
   workflow_dispatch:
     inputs:
       testflight:
@@ -50,7 +50,18 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -project FiveKCoach.xcodeproj -scheme FiveKCoach -configuration Debug \
-            -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build | tail -40
+            -destination 'generic/platform=iOS' -derivedDataPath build/dd CODE_SIGNING_ALLOWED=NO build > build.log 2>&1 \
+            || { grep -E "error:" build.log | sort -u; tail -60 build.log; exit 1; }
+          echo "--- compiler warnings (our code) ---"
+          grep -E "/ios/(App|Watch|CoachCore)/.*warning:" build.log | sed 's|.*/ios/||' | sort -u || true
+          tail -5 build.log
+      - name: Check the app bundle
+        run: |
+          app=build/dd/Build/Products/Debug-iphoneos/FiveKCoach.app
+          ls "$app"/*.wav
+          test "$(ls "$app"/*.wav | wc -l)" -eq 8
+          test -d "$app/Watch/FiveKCoachWatch.app"
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$app/Info.plist"
 
   testflight:
     name: TestFlight upload
