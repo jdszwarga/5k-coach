@@ -13,6 +13,8 @@ struct RunConfig: Hashable {
 
 /// A run that just ended, waiting for Save / Don't save.
 struct FinishedRun {
+    /// The History entry it's saved as (saved as soon as the run ends).
+    var historyId: String
     var config: RunConfig
     var startedAt: Date
     var end: Int
@@ -64,6 +66,7 @@ final class AppModel: ObservableObject {
 
     init() {
         state = AppModel.load()
+        recoverCheckpoint()
     }
 
     // MARK: Persistence
@@ -80,6 +83,40 @@ final class AppModel: ObservableObject {
         }
         s.settings.apiKey = Keychain.read()
         return s
+    }
+
+    /// The run in progress, rewritten every few seconds: if iOS closes the app mid-run, the
+    /// run is added to History the next time the app opens.
+    private static var checkpointURL: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("run-in-progress.json")
+    }
+
+    private func writeCheckpoint(_ r: FinishedRun) {
+        guard let data = try? JSONEncoder().encode(entry(r)) else { return }
+        let url = AppModel.checkpointURL
+        saveQueue.async {
+            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        }
+    }
+
+    private func clearCheckpoint() {
+        let url = AppModel.checkpointURL
+        saveQueue.async { try? FileManager.default.removeItem(at: url) }
+    }
+
+    private func recoverCheckpoint() {
+        let url = AppModel.checkpointURL
+        guard let data = try? Data(contentsOf: url) else { return }
+        try? FileManager.default.removeItem(at: url)
+        guard let e = try? JSONDecoder().decode(HistoryEntry.self, from: data),
+              !state.history.contains(where: { $0.id == e.id }) else { return }
+        let before = state
+        insertHistory(e)
+        state.lastWorkout = e.workout
+        persist(old: before) // property observers don't run during init
+        showToast("Saved your unfinished run from \(shortDate(e.date))")
     }
 
     private func persist(old: AppState) {
@@ -288,7 +325,10 @@ final class AppModel: ObservableObject {
         guard let config = pendingRun else { return }
         pendingRun = nil
         let s = state.settings
-        run = RunEngine(config: config, options: CueOptions(beeps: s.beeps, halfway: s.halfway), gps: s.gps)
+        let engine = RunEngine(config: config, options: CueOptions(beeps: s.beeps, halfway: s.halfway), gps: s.gps)
+        engine.onCheckpoint = { [weak self] r in self?.writeCheckpoint(r) }
+        engine.onFinish = { [weak self] r in self?.autoSave(r) }
+        run = engine
     }
 
     /// An earlier unfinished try at this session, which "check off" can count instead.
@@ -302,20 +342,30 @@ final class AppModel: ObservableObject {
         showToast("Checked off ✓")
     }
 
-    /// Lets a run done without the app (treadmill, forgot phone…) still count toward the week.
-    func checkOff(_ s: WeekSession, _ wk: Workout) {
+    /// Lets a run done without the app (treadmill, forgot phone, forgot to save…) still count,
+    /// on the day it was run.
+    func checkOff(_ s: WeekSession, _ wk: Workout, on day: Date) {
+        let cal = Calendar.current
+        let when = cal.isDateInToday(day) ? Date() : (cal.date(bySettingHour: 12, minute: 0, second: 0, of: day) ?? day)
         let total = totalSeconds(wk)
-        state.history.append(HistoryEntry(
-            id: UUID().uuidString, date: isoString(Date()), sessionId: s.id, sessionLabel: sessionLabel(s), kind: "plan",
+        insertHistory(HistoryEntry(
+            id: UUID().uuidString, date: isoString(when), sessionId: s.id, sessionLabel: sessionLabel(s), kind: "plan",
             workout: wk, totalSec: total, doneSec: total, completed: true, notes: "Checked off without the timer", manual: true))
         showToast("Checked off ✓")
     }
 
+    /// History is kept oldest first; a back-dated entry goes in its place.
+    private func insertHistory(_ e: HistoryEntry) {
+        let d = e.dateValue ?? Date()
+        let i = state.history.firstIndex { ($0.dateValue ?? .distantPast) > d } ?? state.history.count
+        state.history.insert(e, at: i)
+    }
+
     // MARK: Finishing a run
 
-    func saveRun(_ r: FinishedRun, feel: String?, notes: String, completed: Bool) {
-        let entry = HistoryEntry(
-            id: UUID().uuidString,
+    private func entry(_ r: FinishedRun) -> HistoryEntry {
+        HistoryEntry(
+            id: r.historyId,
             date: isoString(r.startedAt),
             sessionId: r.config.session?.id,
             sessionLabel: r.config.kind == "custom" ? nil : r.config.label,
@@ -323,21 +373,37 @@ final class AppModel: ObservableObject {
             workout: r.config.wk,
             totalSec: r.end,
             doneSec: jsRoundInt(r.doneSec),
-            completed: r.config.session != nil ? completed : r.doneSec >= Double(r.end) - 3,
-            feel: feel,
-            notes: notes.trimmingCharacters(in: .whitespacesAndNewlines),
+            completed: r.config.session != nil ? r.completedDefault : r.doneSec >= Double(r.end) - 3,
             distM: r.gps?.distM, gpsSec: r.gps?.gpsSec, track: r.gps?.track)
+    }
+
+    /// The run goes into History the moment it ends; the summary sheet only adds to it.
+    private func autoSave(_ r: FinishedRun) {
+        clearCheckpoint()
         var s = state
-        s.history.append(entry)
+        if let i = s.history.firstIndex(where: { $0.id == r.historyId }) { s.history[i] = entry(r) } else { s.history.append(entry(r)) }
         s.lastWorkout = r.config.wk
         state = s
+    }
+
+    func saveRun(_ r: FinishedRun, feel: String?, notes: String, completed: Bool) {
+        updateHistory(r.historyId) { h in
+            h.feel = feel
+            h.notes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+            if r.config.session != nil { h.completed = completed }
+        }
         run = nil
         tab = .today
         showToast("Run saved")
         if hasKey && state.settings.autoReview && state.nextSession() != nil { runReview() }
     }
 
-    func discardRun() { run = nil }
+    /// "Don't save" removes the auto-saved run; closing after a failed start just closes.
+    func discardRun(_ r: FinishedRun?) {
+        clearCheckpoint()
+        if let r { deleteRun(r.historyId) }
+        run = nil
+    }
 
     // MARK: History edits
 

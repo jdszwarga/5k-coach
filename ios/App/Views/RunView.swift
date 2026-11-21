@@ -16,7 +16,7 @@ struct RunFlowView: View {
                 VStack(spacing: 16) {
                     Image(systemName: "speaker.slash").font(.largeTitle)
                     Text(err).multilineTextAlignment(.center)
-                    Button("Close") { engine.abandon(); model.discardRun() }.buttonStyle(.borderedProminent)
+                    Button("Close") { engine.abandon(); model.discardRun(nil) }.buttonStyle(.borderedProminent)
                 }
                 .padding(32)
             } else {
@@ -199,6 +199,9 @@ struct FinishView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
+                } footer: {
+                    Label("Saved to History", systemImage: "checkmark.circle.fill")
+                        .frame(maxWidth: .infinity)
                 }
                 if let g = r.gps {
                     Section {
@@ -239,7 +242,7 @@ struct FinishView: View {
                 .background(.bar)
             }
             .confirmationDialog("Discard this run?", isPresented: $confirmDiscard, titleVisibility: .visible) {
-                Button("Discard", role: .destructive) { model.discardRun() }
+                Button("Discard", role: .destructive) { model.discardRun(r) }
             }
         }
     }

@@ -8,6 +8,9 @@ struct RunSetupView: View {
     let info: SetupInfo
     @State private var wk: Workout
     @State private var confirmMark = false
+    @State private var pickDay = false
+    @State private var day = Date()
+    @State private var checkedOff = false
 
     private static let LIMITS: [WritableKeyPath<Workout, Int>: ClosedRange<Int>] = [
         \Workout.runSec: 15...3600, \Workout.walkSec: 0...900, \Workout.repeats: 1...30,
@@ -76,7 +79,7 @@ struct RunSetupView: View {
                     } label: { Label("Start", systemImage: "play.fill") }
                     .buttonStyle(PrimaryButtonStyle())
                     if info.canMark {
-                        Button("Check off without the timer") { confirmMark = true }
+                        Button("Check off without the timer") { if earlier != nil { confirmMark = true } else { pickDay = true } }
                             .font(.subheadline.weight(.semibold))
                             .frame(minHeight: 36)
                     }
@@ -85,7 +88,33 @@ struct RunSetupView: View {
                 .background(.bar)
             }
             .confirmationDialog(markMessage, isPresented: $confirmMark, titleVisibility: .visible) {
-                Button(earlier != nil ? "Count it" : "Check off") { markDone() }
+                Button("Count it") { markDone() }
+                Button("Log a different run") { pickDay = true }
+            }
+            .sheet(isPresented: $pickDay, onDismiss: { if checkedOff { dismiss() } }) {
+                NavigationStack {
+                    Form {
+                        Section {
+                            DatePicker("Day you ran", selection: $day, in: ...Date(), displayedComponents: .date)
+                                .datePickerStyle(.graphical)
+                        } footer: {
+                            Text("Counts \(info.session.map(model.sessionLabel) ?? "this run") as done on that day, without distance or a route.")
+                        }
+                    }
+                    .navigationTitle("Check off")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) { Button("Cancel") { pickDay = false } }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Check off") {
+                                if let s = info.session { model.checkOff(s, wk, on: day) }
+                                checkedOff = true
+                                pickDay = false
+                            }
+                        }
+                    }
+                }
+                .presentationDetents([.large])
             }
         }
         .presentationDragIndicator(.visible)
@@ -98,12 +127,12 @@ struct RunSetupView: View {
         if let e = earlier {
             return "Count your run from \(shortDate(e.date)) (\(describe(e.workout)), \(fmt(e.doneSec))) as \(model.sessionLabel(s))?"
         }
-        return "Check off \(model.sessionLabel(s)) as done?"
+        return "Check off \(model.sessionLabel(s))?"
     }
 
     private func markDone() {
-        guard let s = info.session else { return }
-        if let e = earlier { model.countEarlier(e.id) } else { model.checkOff(s, wk) }
+        guard let e = earlier else { return }
+        model.countEarlier(e.id)
         dismiss()
     }
 

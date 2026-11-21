@@ -148,6 +148,13 @@ final class RunEngine: ObservableObject, Identifiable {
     private let delegate = PlayerDelegate()
     private var interruptObs: NSObjectProtocol?
     private var resumeAfterInterruption = false
+    private var checkpointTimer: Timer?
+
+    /// Called once when the run ends, with the result (saved to History straight away).
+    var onFinish: ((FinishedRun) -> Void)?
+    /// Called every few seconds during the run with the run so far, so it survives the app
+    /// being closed by iOS.
+    var onCheckpoint: ((FinishedRun) -> Void)?
 
     init(config: RunConfig, options: CueOptions, gps useGps: Bool) {
         self.config = config
@@ -187,6 +194,9 @@ final class RunEngine: ObservableObject, Identifiable {
             ready = true
             resume()
             startGps()
+            checkpointTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
+                MainActor.assumeIsolated { self?.checkpoint() }
+            }
         } catch {
             loadError = "Couldn’t prepare the voice cues: \(error.localizedDescription)"
         }
@@ -241,6 +251,7 @@ final class RunEngine: ObservableObject, Identifiable {
         player?.pause()
         paused = true
         gps?.setPaused(true)
+        checkpoint()
     }
 
     func resume() {
@@ -251,27 +262,40 @@ final class RunEngine: ObservableObject, Identifiable {
         gps?.setPaused(false)
     }
 
+    /// The run as it stands, `doneSec` seconds in.
+    private func snapshot(_ doneSec: Double) -> FinishedRun {
+        let runs = segs.filter { $0.type == .run }
+        let mainDone = runs.last.map { doneSec >= Double($0.end) - 3 } ?? (doneSec >= Double(end) - 3)
+        return FinishedRun(
+            historyId: id.uuidString, config: config, startedAt: startedAt, end: end, doneSec: doneSec,
+            gps: gps?.summary(), mainDone: mainDone, completedDefault: mainDone || doneSec >= Double(end) * 0.75)
+    }
+
+    private func checkpoint() {
+        guard ready, !finished, currentTime >= 1 else { return }
+        onCheckpoint?(snapshot(currentTime))
+    }
+
     func finish(reachedEnd: Bool) {
         guard result == nil, ready else { return }
         let doneSec = reachedEnd ? Double(end) : currentTime
+        stopEverything()
+        paused = true
+        let r = snapshot(doneSec)
+        result = r
+        onFinish?(r)
+    }
+
+    private func stopEverything() {
+        checkpointTimer?.invalidate()
+        checkpointTimer = nil
         player?.stop()
         location?.stop()
         if let o = interruptObs { NotificationCenter.default.removeObserver(o) }
+        interruptObs = nil
         AudioRender.deactivateSession()
-
-        let runs = segs.filter { $0.type == .run }
-        let mainDone = runs.last.map { doneSec >= Double($0.end) - 3 } ?? (doneSec >= Double(end) - 3)
-        paused = true
-        result = FinishedRun(
-            config: config, startedAt: startedAt, end: end, doneSec: doneSec, gps: gps?.summary(),
-            mainDone: mainDone, completedDefault: mainDone || doneSec >= Double(end) * 0.75)
     }
 
     /// Closing the run screen without a result (e.g. the cues failed to load).
-    func abandon() {
-        player?.stop()
-        location?.stop()
-        if let o = interruptObs { NotificationCenter.default.removeObserver(o) }
-        AudioRender.deactivateSession()
-    }
+    func abandon() { stopEverything() }
 }
