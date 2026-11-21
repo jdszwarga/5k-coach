@@ -291,6 +291,7 @@ struct Coach: Sendable {
             let pct = h.totalSec > 0 ? jsRoundInt(Double(h.doneSec) / Double(h.totalSec) * 100) : 0
             let day = h.dateValue.map(localDay) ?? h.date
             var line = "- \(day) (\(kindText(h))): \(describe(h.workout)); finished \(pct)% (\(h.completed ? "counted as done" : "not counted"));"
+            if let x = h.extraSec, x > 0 { line += " kept going \(fmt(x)) after the workout ended;" }
             if let d = h.distM, d > 0 { line += " GPS \(miText(Double(d))) mi;" }
             line += " felt \(h.feel ?? "not rated")"
             if !h.notes.isEmpty { line += "; notes: \"\(h.notes)\"" }

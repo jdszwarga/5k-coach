@@ -28,8 +28,10 @@ struct SettingsView: View {
 
                 Section {
                     Toggle("Track distance with GPS", isOn: $model.state.settings.gps)
+                    Toggle("Keep tracking after the workout", isOn: $model.state.settings.keepTracking)
+                        .disabled(!model.state.settings.gps)
                 } header: { Text("Distance") } footer: {
-                    Text("Records distance, pace and a map of your route. iPhone asks for location access on your first run.")
+                    Text("Records distance, pace and a map of your route. iPhone asks for location access on your first run. With keep tracking on, GPS carries on when the workout ends, until you tap Finish or stand still for 5 minutes.")
                 }
 
                 Section("Coach") {

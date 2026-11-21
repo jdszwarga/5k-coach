@@ -245,7 +245,7 @@ private struct Stats: View {
         let st = model.state
         let prog = st.progress()
         let longest = st.history.filter(\.completed).reduce(0) { max($0, $1.workout.runSec) }
-        let totalMin = minutes(st.history.reduce(0) { $0 + $1.doneSec })
+        let totalMin = minutes(st.history.reduce(0) { $0 + timeOf($1) })
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
             tile {
                 HStack(spacing: 12) {

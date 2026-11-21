@@ -134,11 +134,23 @@ final class RunEngine: ObservableObject, Identifiable {
     let config: RunConfig
     let options: CueOptions
     let startedAt = Date()
+    /// After the workout ends, keep recording GPS until Finish ("keep tracking").
+    let keepTracking: Bool
 
     @Published private(set) var ready = false
     @Published private(set) var loadError: String?
     @Published private(set) var paused = true
     @Published private(set) var result: FinishedRun?
+    /// The workout is over and GPS keeps recording the extra.
+    @Published private(set) var overtime = false
+    private var otBase = 0.0
+    private var otResumedAt: Date?
+    private var pausedAt: Date?
+
+    /// Keep-tracking stops by itself after this long without moving, paused, or in total.
+    static let STILL_STOP = 5.0 * 60
+    static let PAUSED_STOP = 10.0 * 60
+    static let MAX_EXTRA = 90.0 * 60
 
     private(set) var segs: [Segment] = []
     private(set) var end = 0
@@ -152,13 +164,16 @@ final class RunEngine: ObservableObject, Identifiable {
 
     /// Called once when the run ends, with the result (saved to History straight away).
     var onFinish: ((FinishedRun) -> Void)?
+    /// Called when the workout part ends and keep-tracking starts (saved straight away too).
+    var onWorkoutDone: ((FinishedRun) -> Void)?
     /// Called every few seconds during the run with the run so far, so it survives the app
     /// being closed by iOS.
     var onCheckpoint: ((FinishedRun) -> Void)?
 
-    init(config: RunConfig, options: CueOptions, gps useGps: Bool) {
+    init(config: RunConfig, options: CueOptions, gps useGps: Bool, keepTracking: Bool) {
         self.config = config
         self.options = options
+        self.keepTracking = useGps && keepTracking
         if useGps {
             gps = GpsTracker(clock: { [weak self] in self?.currentTime ?? 0 })
             location = LocationFeed()
@@ -167,8 +182,14 @@ final class RunEngine: ObservableObject, Identifiable {
 
     /// Seconds into the workout (pauses don't count).
     var currentTime: Double {
-        if let r = result { return r.doneSec }
+        if let r = result { return r.doneSec + r.extraSec }
+        if overtime { return Double(end) + extraTime }
         return min(player?.currentTime ?? 0, Double(end))
+    }
+
+    /// Seconds tracked since the workout ended (pauses don't count).
+    var extraTime: Double {
+        otBase + (otResumedAt.map { Date().timeIntervalSince($0) } ?? 0)
     }
 
     var finished: Bool { result != nil }
@@ -185,7 +206,7 @@ final class RunEngine: ObservableObject, Identifiable {
             try AudioRender.activateSession()
             let p = try AVAudioPlayer(contentsOf: prepared.url)
             delegate.onFinish = { [weak self] _ in
-                MainActor.assumeIsolated { self?.finish(reachedEnd: true) }
+                MainActor.assumeIsolated { self?.workoutEnded() }
             }
             p.delegate = delegate
             p.prepareToPlay()
@@ -234,7 +255,7 @@ final class RunEngine: ObservableObject, Identifiable {
 
     /// A phone call (or similar) stops the audio: pause the workout, and carry on afterwards.
     private func handleInterruption(_ type: AVAudioSession.InterruptionType?, _ opts: AVAudioSession.InterruptionOptions) {
-        guard !finished else { return }
+        guard !finished, !overtime else { return }
         if type == .began {
             resumeAfterInterruption = !paused
             pause()
@@ -247,17 +268,29 @@ final class RunEngine: ObservableObject, Identifiable {
     func toggle() { paused ? resume() : pause() }
 
     func pause() {
-        guard !finished else { return }
-        player?.pause()
+        guard !finished, !paused else { return }
+        if overtime {
+            otBase = extraTime
+            otResumedAt = nil
+        } else {
+            player?.pause()
+        }
+        pausedAt = Date()
         paused = true
         gps?.setPaused(true)
         checkpoint()
     }
 
     func resume() {
-        guard !finished, let player else { return }
-        try? AudioRender.activateSession()
-        player.play()
+        guard !finished else { return }
+        if overtime {
+            otResumedAt = Date()
+        } else {
+            guard let player else { return }
+            try? AudioRender.activateSession()
+            player.play()
+        }
+        pausedAt = nil
         paused = false
         gps?.setPaused(false)
     }
@@ -268,17 +301,56 @@ final class RunEngine: ObservableObject, Identifiable {
         let mainDone = runs.last.map { doneSec >= Double($0.end) - 3 } ?? (doneSec >= Double(end) - 3)
         return FinishedRun(
             historyId: id.uuidString, config: config, startedAt: startedAt, end: end, doneSec: doneSec,
-            gps: gps?.summary(), mainDone: mainDone, completedDefault: mainDone || doneSec >= Double(end) * 0.75)
+            extraSec: overtime ? extraTime : 0, gps: gps?.summary(), mainDone: mainDone, completedDefault: mainDone || doneSec >= Double(end) * 0.75)
     }
 
     private func checkpoint() {
         guard ready, !finished, currentTime >= 1 else { return }
-        onCheckpoint?(snapshot(currentTime))
+        if overtime && autoStop() { return }
+        onCheckpoint?(snapshot(overtime ? Double(end) : currentTime))
+    }
+
+    /// The cue track has played to the end: keep tracking, or finish.
+    private func workoutEnded() {
+        guard ready, !finished, !overtime else { return }
+        let status = gps?.status
+        guard keepTracking, status != .denied, status != .unavailable else { finish(reachedEnd: true); return }
+        // The track runs a little past the workout (the final message): count that as extra.
+        otBase = max(0, (player?.duration ?? Double(end)) - Double(end))
+        otResumedAt = paused ? nil : Date()
+        player?.stop()
+        player = nil
+        if let o = interruptObs { NotificationCenter.default.removeObserver(o) }
+        interruptObs = nil
+        AudioRender.deactivateSession() // location updates keep the app running from here
+        overtime = true
+        onWorkoutDone?(snapshot(Double(end)))
+    }
+
+    /// Ends keep-tracking by itself: standing still for a while (she's home), paused for
+    /// long, or very long overall. Standing-still time at the end isn't counted.
+    private func autoStop() -> Bool {
+        if paused {
+            if let p = pausedAt, Date().timeIntervalSince(p) > RunEngine.PAUSED_STOP {
+                finish(reachedEnd: true)
+                return true
+            }
+            return false
+        }
+        let lastMove = max(gps?.pts.last?.t ?? 0, Double(end))
+        let still = currentTime - lastMove
+        guard still > RunEngine.STILL_STOP || extraTime > RunEngine.MAX_EXTRA else { return false }
+        if still > RunEngine.STILL_STOP {
+            otBase = max(0, lastMove - Double(end))
+            otResumedAt = nil
+        }
+        finish(reachedEnd: true)
+        return true
     }
 
     func finish(reachedEnd: Bool) {
         guard result == nil, ready else { return }
-        let doneSec = reachedEnd ? Double(end) : currentTime
+        let doneSec = reachedEnd || overtime ? Double(end) : currentTime
         stopEverything()
         paused = true
         let r = snapshot(doneSec)

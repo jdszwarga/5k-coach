@@ -18,7 +18,7 @@ struct HistoryView: View {
                                 NavigationLink(value: HistoryRoute(id: h.id)) { HistoryRow(h: h) }
                             }
                         } header: {
-                            let mins = minutes(list.reduce(0) { $0 + $1.doneSec })
+                            let mins = minutes(list.reduce(0) { $0 + timeOf($1) })
                             let dist = distOf(list)
                             Text("\(list.count) run\(list.count == 1 ? "" : "s") · \(mins) minutes\(dist > 0 ? " · \(miText(Double(dist))) miles" : "")")
                                 .textCase(nil)
@@ -40,7 +40,7 @@ private struct HistoryRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 (Text(shortDate(h.date)).fontWeight(.semibold)
                  + Text(h.sessionLabel.map { " · \($0)" } ?? "").foregroundColor(.secondary))
-                Text("\(describe(h.workout)) · \(fmt(h.doneSec))\(distBit(h))\(h.completed ? "" : " (partial)")")
+                Text("\(describe(h.workout)) · \(fmt(h.doneSec))\(extraBit(h))\(distBit(h))\(h.completed ? "" : " (partial)")")
                     .font(.footnote).foregroundStyle(.secondary)
             }
             Spacer()
@@ -75,6 +75,9 @@ struct HistoryDetailView: View {
                     Text(h.sessionLabel ?? "Custom run").foregroundStyle(.secondary)
                     (Text(fmt(h.doneSec)).font(.largeTitle.bold()).monospacedDigit()
                      + Text(" / \(fmt(h.totalSec))").font(.title3).foregroundColor(.secondary))
+                    if let x = h.extraSec, x > 0 {
+                        Text("+\(fmt(x)) extra after the workout").font(.subheadline.weight(.semibold)).foregroundStyle(Color.warm)
+                    }
                     Text(describe(h.workout)).foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 4)

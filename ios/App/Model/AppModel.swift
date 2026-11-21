@@ -19,6 +19,8 @@ struct FinishedRun {
     var startedAt: Date
     var end: Int
     var doneSec: Double
+    /// Seconds tracked after the workout ended (keep tracking).
+    var extraSec: Double
     var gps: GpsSummary?
     var mainDone: Bool
     var completedDefault: Bool
@@ -110,10 +112,18 @@ final class AppModel: ObservableObject {
         let url = AppModel.checkpointURL
         guard let data = try? Data(contentsOf: url) else { return }
         try? FileManager.default.removeItem(at: url)
-        guard let e = try? JSONDecoder().decode(HistoryEntry.self, from: data),
-              !state.history.contains(where: { $0.id == e.id }) else { return }
+        guard let e = try? JSONDecoder().decode(HistoryEntry.self, from: data) else { return }
         let before = state
-        insertHistory(e)
+        if let i = state.history.firstIndex(where: { $0.id == e.id }) {
+            // Saved when the workout ended; the checkpoint adds what was tracked after it.
+            var h = e
+            h.feel = state.history[i].feel
+            h.notes = state.history[i].notes
+            h.completed = state.history[i].completed
+            state.history[i] = h
+        } else {
+            insertHistory(e)
+        }
         state.lastWorkout = e.workout
         persist(old: before) // property observers don't run during init
         showToast("Saved your unfinished run from \(shortDate(e.date))")
@@ -325,8 +335,10 @@ final class AppModel: ObservableObject {
         guard let config = pendingRun else { return }
         pendingRun = nil
         let s = state.settings
-        let engine = RunEngine(config: config, options: CueOptions(beeps: s.beeps, halfway: s.halfway), gps: s.gps)
+        let engine = RunEngine(config: config, options: CueOptions(beeps: s.beeps, halfway: s.halfway),
+                               gps: s.gps, keepTracking: s.keepTracking)
         engine.onCheckpoint = { [weak self] r in self?.writeCheckpoint(r) }
+        engine.onWorkoutDone = { [weak self] r in self?.autoSave(r) }
         engine.onFinish = { [weak self] r in self?.autoSave(r) }
         run = engine
     }
@@ -374,7 +386,8 @@ final class AppModel: ObservableObject {
             totalSec: r.end,
             doneSec: jsRoundInt(r.doneSec),
             completed: r.config.session != nil ? r.completedDefault : r.doneSec >= Double(r.end) - 3,
-            distM: r.gps?.distM, gpsSec: r.gps?.gpsSec, track: r.gps?.track)
+            distM: r.gps?.distM, gpsSec: r.gps?.gpsSec, track: r.gps?.track,
+            extraSec: r.extraSec >= 1 ? jsRoundInt(r.extraSec) : nil)
     }
 
     /// The run goes into History the moment it ends; the summary sheet only adds to it.
@@ -510,6 +523,15 @@ func runPace(_ h: HistoryEntry) -> Double? {
 /// " · 1.42 mi" for runs that recorded distance; runs without GPS show nothing.
 func distBit(_ h: HistoryEntry) -> String {
     if let d = h.distM, d > 0 { return " · \(miText(Double(d))) mi" }
+    return ""
+}
+
+/// Time on feet: the workout plus any extra tracked after it.
+func timeOf(_ h: HistoryEntry) -> Int { h.doneSec + (h.extraSec ?? 0) }
+
+/// " · +12:30 extra"
+func extraBit(_ h: HistoryEntry) -> String {
+    if let x = h.extraSec, x > 0 { return " · +\(fmt(x)) extra" }
     return ""
 }
 

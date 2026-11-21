@@ -69,7 +69,7 @@ struct PlanView: View {
                                 StatusDot(state: .done)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(s.title).font(.body.weight(.semibold))
-                                    Text("\(shortDate(run.date)) · \(run.manual == true ? "Checked off" : "\(describe(run.workout)) · \(fmt(run.doneSec))\(distBit(run))")")
+                                    Text("\(shortDate(run.date)) · \(run.manual == true ? "Checked off" : "\(describe(run.workout)) · \(fmt(run.doneSec))\(extraBit(run))\(distBit(run))")")
                                         .font(.footnote).foregroundStyle(.secondary)
                                 }
                                 Spacer()

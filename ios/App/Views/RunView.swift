@@ -45,6 +45,8 @@ struct RunView: View {
             let remSeg = seg.map { Double($0.end) - t } ?? 0
             let frac = seg.map { (t - Double($0.start)) / Double(max(1, $0.dur)) } ?? 1
             let nx: Segment? = seg != nil && i + 1 < segs.count ? segs[i + 1] : nil
+            let ot = engine.overtime
+            let extra = engine.extraTime
 
             VStack(spacing: 0) {
                 HStack {
@@ -61,10 +63,10 @@ struct RunView: View {
                 .padding(.horizontal, 16)
 
                 VStack(spacing: 4) {
-                    Text(seg.flatMap { PHASE_NAMES[$0.type] } ?? "DONE")
+                    Text(ot ? "EXTRA" : seg.flatMap { PHASE_NAMES[$0.type] } ?? "DONE")
                         .font(.system(size: 44, weight: .heavy, design: .rounded))
                         .foregroundStyle(color)
-                    Text(repText(seg)).font(.headline).foregroundStyle(.white.opacity(0.7))
+                    Text(ot ? "Workout done — keep going!" : repText(seg)).font(.headline).foregroundStyle(.white.opacity(0.7))
                 }
                 .padding(.top, 24)
 
@@ -74,9 +76,9 @@ struct RunView: View {
                         .stroke(color, style: StrokeStyle(lineWidth: 14, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                     VStack(spacing: 6) {
-                        Text(fmt(ceil(remSeg - 0.05)))
+                        Text(ot ? "+\(fmt(extra))" : fmt(ceil(remSeg - 0.05)))
                             .font(.system(size: 72, weight: .bold, design: .rounded)).monospacedDigit()
-                        Text(nextText(seg, nx)).font(.subheadline).foregroundStyle(.white.opacity(0.7))
+                        Text(ot ? "Tap Finish when you’re done" : nextText(seg, nx)).font(.subheadline).foregroundStyle(.white.opacity(0.7))
                     }
                 }
                 .frame(width: 270, height: 270)
@@ -90,7 +92,7 @@ struct RunView: View {
                     if let g = engine.gps {
                         stat("Miles", g.distM > 0 || g.status == .ok || g.status == .searching ? miText(g.distM) : "—")
                     }
-                    stat("Remaining", fmt(end - t))
+                    if ot { stat("Extra", fmt(extra)) } else { stat("Remaining", fmt(end - t)) }
                 }
                 .padding(.top, 20)
                 .padding(.horizontal, 16)
@@ -101,22 +103,47 @@ struct RunView: View {
 
                 Spacer()
 
-                HStack(spacing: 40) {
-                    Button { askEnd() } label: {
-                        Image(systemName: "stop.fill").font(.title2).frame(width: 64, height: 64)
-                            .background(.white.opacity(0.15), in: Circle())
-                    }
-                    .accessibilityLabel("End run")
-                    Button { engine.toggle() } label: {
-                        Image(systemName: engine.paused ? "play.fill" : "pause.fill").font(.system(size: 34)).frame(width: 88, height: 88)
+                if ot {
+                    // Keep tracking: Finish is the big button, pause the small one.
+                    HStack(spacing: 40) {
+                        Button { engine.toggle() } label: {
+                            Image(systemName: engine.paused ? "play.fill" : "pause.fill").font(.title2).frame(width: 64, height: 64)
+                                .background(.white.opacity(0.15), in: Circle())
+                        }
+                        .accessibilityLabel(engine.paused ? "Resume" : "Pause")
+                        Button { engine.finish(reachedEnd: true) } label: {
+                            VStack(spacing: 2) {
+                                Image(systemName: "flag.checkered").font(.system(size: 30, weight: .semibold))
+                                Text("Finish").font(.caption.weight(.bold))
+                            }
+                            .frame(width: 88, height: 88)
                             .foregroundStyle(.black)
                             .background(color, in: Circle())
+                        }
+                        Spacer().frame(width: 64, height: 64)
                     }
-                    .accessibilityLabel(engine.paused ? "Resume" : "Pause")
-                    Spacer().frame(width: 64, height: 64)
+                } else {
+                    HStack(spacing: 40) {
+                        Button { askEnd() } label: {
+                            Image(systemName: "stop.fill").font(.title2).frame(width: 64, height: 64)
+                                .background(.white.opacity(0.15), in: Circle())
+                        }
+                        .accessibilityLabel("End run")
+                        Button { engine.toggle() } label: {
+                            Image(systemName: engine.paused ? "play.fill" : "pause.fill").font(.system(size: 34)).frame(width: 88, height: 88)
+                                .foregroundStyle(.black)
+                                .background(color, in: Circle())
+                        }
+                        .accessibilityLabel(engine.paused ? "Resume" : "Pause")
+                        Spacer().frame(width: 64, height: 64)
+                    }
                 }
 
-                Text("Lock your iPhone anytime — cues and GPS keep going.")
+                Text(ot ? "Tracking your extra distance. It stops by itself after 5 minutes standing still."
+                     : engine.keepTracking ? "Lock your iPhone anytime. When the workout ends, GPS keeps tracking until you tap Finish."
+                     : "Lock your iPhone anytime — cues and GPS keep going.")
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
                     .font(.footnote).foregroundStyle(.white.opacity(0.5))
                     .padding(.top, 14).padding(.bottom, 8)
             }
@@ -136,6 +163,7 @@ struct RunView: View {
     }
 
     private func askEnd() {
+        if engine.overtime { engine.finish(reachedEnd: true); return }
         wasPlaying = !engine.paused
         engine.pause()
         confirmEnd = true
@@ -194,6 +222,9 @@ struct FinishView: View {
                     VStack(spacing: 8) {
                         Ring(pct: r.end > 0 ? r.doneSec / Double(r.end) : 0, size: 96, stroke: 10)
                         Text(fmt(r.doneSec)).font(.system(size: 40, weight: .bold, design: .rounded)).monospacedDigit()
+                        if r.extraSec >= 1 {
+                            Text("+\(fmt(r.extraSec)) extra after the workout").font(.subheadline.weight(.semibold)).foregroundStyle(Color.warm)
+                        }
                         Text(describe(r.config.wk) + (r.config.kind != "custom" ? " · \(r.config.label)" : ""))
                             .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     }
@@ -205,7 +236,7 @@ struct FinishView: View {
                 }
                 if let g = r.gps {
                     Section {
-                        GpsBlock(distM: g.distM, pace: paceSec(Double(g.distM), Double(g.gpsSec != 0 ? g.gpsSec : jsRoundInt(r.doneSec))),
+                        GpsBlock(distM: g.distM, pace: paceSec(Double(g.distM), Double(g.gpsSec != 0 ? g.gpsSec : jsRoundInt(r.doneSec + r.extraSec))),
                                  track: g.track)
                             .padding(.vertical, 4)
                     }

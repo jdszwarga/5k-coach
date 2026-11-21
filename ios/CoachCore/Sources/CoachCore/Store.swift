@@ -144,9 +144,11 @@ public struct Settings: Codable, Hashable, Sendable {
     public var autoReview = true
     /// Record distance/pace/route during runs.
     public var gps = true
+    /// Native app: keep recording GPS after the workout ends, until Finish (or standing still).
+    public var keepTracking = true
     public init() {}
 
-    enum CodingKeys: String, CodingKey { case apiKey, model, audioMode, beeps, halfway, autoReview, gps }
+    enum CodingKeys: String, CodingKey { case apiKey, model, audioMode, beeps, halfway, autoReview, gps, keepTracking }
     /// `{ ...DEFAULTS.settings, ...parsed.settings }`
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -158,6 +160,7 @@ public struct Settings: Codable, Hashable, Sendable {
         halfway = c.flexBool(.halfway) ?? d.halfway
         autoReview = c.flexBool(.autoReview) ?? d.autoReview
         gps = c.flexBool(.gps) ?? d.gps
+        keepTracking = c.flexBool(.keepTracking) ?? d.keepTracking
     }
 }
 
@@ -221,20 +224,22 @@ public struct HistoryEntry: Codable, Hashable, Sendable, Identifiable {
     public var distM: Int?
     public var gpsSec: Int?
     public var track: Track?
+    /// Native app: seconds tracked after the workout ended ("keep tracking").
+    public var extraSec: Int?
 
     public init(id: String, date: String, sessionId: String? = nil, sessionLabel: String? = nil, kind: String? = nil,
                 workout: Workout, totalSec: Int, doneSec: Int, completed: Bool, feel: String? = nil, notes: String = "",
-                manual: Bool? = nil, distM: Int? = nil, gpsSec: Int? = nil, track: Track? = nil) {
+                manual: Bool? = nil, distM: Int? = nil, gpsSec: Int? = nil, track: Track? = nil, extraSec: Int? = nil) {
         self.id = id; self.date = date; self.sessionId = sessionId; self.sessionLabel = sessionLabel; self.kind = kind
         self.workout = workout; self.totalSec = totalSec; self.doneSec = doneSec; self.completed = completed
         self.feel = feel; self.notes = notes; self.manual = manual
-        self.distM = distM; self.gpsSec = gpsSec; self.track = track
+        self.distM = distM; self.gpsSec = gpsSec; self.track = track; self.extraSec = extraSec
     }
 
     public var dateValue: Date? { parseISODate(date) }
 
     enum CodingKeys: String, CodingKey {
-        case id, date, sessionId, sessionLabel, kind, workout, totalSec, doneSec, completed, feel, notes, manual, distM, gpsSec, track
+        case id, date, sessionId, sessionLabel, kind, workout, totalSec, doneSec, completed, feel, notes, manual, distM, gpsSec, track, extraSec
     }
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -254,6 +259,7 @@ public struct HistoryEntry: Codable, Hashable, Sendable, Identifiable {
         distM = c.flexInt(.distM)
         gpsSec = c.flexInt(.gpsSec)
         track = try? c.decodeIfPresent(Track.self, forKey: .track)
+        extraSec = c.flexInt(.extraSec)
     }
 }
 
